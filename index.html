@@ -131,14 +131,22 @@
             </div>
 
             <div id="ads" class="page">
-                <h2 class="text-xl font-bold mb-4">Beeksisa Ilaaluun Hojjedhu</h2>
+                <h2 class="text-xl font-bold mb-4">Hojiiwwan XP Argamsiisan</h2>
                 <div class="space-y-4">
                     <div class="glass-card p-5 flex justify-between items-center border-l-4 border-cyan-500">
                         <div>
                             <h4 class="font-bold text-sm">Video Ad Gold</h4>
                             <p class="text-xs text-gray-400">+50 XP Per View</p>
                         </div>
-                        <button onclick="watchRealAd()" class="btn-main text-black text-[10px] font-bold px-4 py-2 rounded-full uppercase">Ilaali</button>
+                        <button onclick="watchRewardAd()" class="btn-main text-black text-[10px] font-bold px-4 py-2 rounded-full uppercase">Ilaali</button>
+                    </div>
+
+                    <div class="glass-card p-5 flex justify-between items-center border-l-4 border-yellow-500">
+                        <div>
+                            <h4 class="font-bold text-sm">Special Task Ad</h4>
+                            <p class="text-xs text-gray-400">+100 XP Completion</p>
+                        </div>
+                        <button onclick="watchTaskAd()" class="bg-yellow-500 text-black text-[10px] font-bold px-4 py-2 rounded-full uppercase">Hojjedhu</button>
                     </div>
                 </div>
             </div>
@@ -245,8 +253,9 @@
         tg.expand();
         tg.enableClosingConfirmation();
 
-        // ADSGRAM INITIALIZATION - Block ID 24434 galfameera
-        const AdController = window.Adsgram.init({ blockId: "25380" });
+        // ADSGRAM INITIALIZATION
+        const RewardAdController = window.Adsgram.init({ blockId: "24434" });
+        const TaskAdController = window.Adsgram.init({ blockId: "25392" }); // Task ID haaraa
 
         // Load User Data
         const userData = tg.initDataUnsafe?.user;
@@ -266,23 +275,35 @@
             tg.HapticFeedback.impactOccurred('medium');
         }
 
-        function watchRealAd() {
+        // Function for Video Reward Ad
+        function watchRewardAd() {
             tg.showConfirm("Beeksisa ilaaluun 50 XP argachuu barbaadduu?", (confirmed) => {
                 if(confirmed) {
                     tg.MainButton.setText("BEEKSISA FE'AA JIRA...").show();
-                    
-                    // Adsgram show
-                    AdController.show().then((result) => {
+                    RewardAdController.show().then((result) => {
                         tg.MainButton.hide();
                         updateXP(50);
-                        tg.showPopup({
-                            title: 'Milkaa\'eera!',
-                            message: '50 XP argattaniittu!',
-                            buttons: [{type: 'ok'}]
-                        });
+                        tg.showPopup({ title: 'Milkaa\'eera!', message: '50 XP argattaniittu!', buttons: [{type: 'ok'}] });
                     }).catch((result) => {
                         tg.MainButton.hide();
-                        tg.showAlert("Beeksisa dhiistaniittu ykn rakkoon uumameera.");
+                        tg.showAlert("Beeksisa dhiistaniittu.");
+                    });
+                }
+            });
+        }
+
+        // Function for Task Ad (New)
+        function watchTaskAd() {
+            tg.showConfirm("Hojii kana xumuruun 100 XP argachuu barbaadduu?", (confirmed) => {
+                if(confirmed) {
+                    tg.MainButton.setText("HOJII FE'AA JIRA...").show();
+                    TaskAdController.show().then((result) => {
+                        tg.MainButton.hide();
+                        updateXP(100);
+                        tg.showPopup({ title: 'Milkaa\'eera!', message: 'Hojii xumurtaniittu. 100 XP argattaniittu!', buttons: [{type: 'ok'}] });
+                    }).catch((result) => {
+                        tg.MainButton.hide();
+                        tg.showAlert("Hojii dhiistaniittu.");
                     });
                 }
             });
