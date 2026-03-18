@@ -6,6 +6,7 @@
     <title>Gemini Premium App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -112,7 +113,7 @@
                 <div class="glass-card p-8 text-center mb-6 relative overflow-hidden">
                     <div class="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl"></div>
                     <p class="text-gray-400 text-sm mb-2">Qabeenya Keessan</p>
-                    <h1 class="text-5xl font-black tracking-tight mb-2">1,250 <span class="text-lg text-cyan-400">XP</span></h1>
+                    <h1 class="text-5xl font-black tracking-tight mb-2"><span id="user-xp">1,250</span> <span class="text-lg text-cyan-400">XP</span></h1>
                     <p class="text-xs text-green-400"><i class="fa-solid fa-arrow-up"></i> +15% har'a</p>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
@@ -244,6 +245,9 @@
         tg.expand();
         tg.enableClosingConfirmation();
 
+        // ADSGRAM INITIALIZATION - Block ID 24434 galfameera
+        const AdController = window.Adsgram.init({ blockId: "24434" });
+
         // Load User Data
         const userData = tg.initDataUnsafe?.user;
         if(userData) {
@@ -255,15 +259,10 @@
         }
 
         function showSection(id, element) {
-            // Switch Active Page
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-
-            // Switch Active Nav Icon
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             element.classList.add('active');
-
-            // Vibration Effect
             tg.HapticFeedback.impactOccurred('medium');
         }
 
@@ -271,21 +270,33 @@
             tg.showConfirm("Beeksisa ilaaluun 50 XP argachuu barbaadduu?", (confirmed) => {
                 if(confirmed) {
                     tg.MainButton.setText("BEEKSISA FE'AA JIRA...").show();
-                    setTimeout(() => {
+                    
+                    // Adsgram show
+                    AdController.show().then((result) => {
                         tg.MainButton.hide();
+                        updateXP(50);
                         tg.showPopup({
                             title: 'Milkaa\'eera!',
-                            message: '50 XP argatteetta.',
+                            message: '50 XP argattaniittu!',
                             buttons: [{type: 'ok'}]
                         });
-                    }, 2000);
+                    }).catch((result) => {
+                        tg.MainButton.hide();
+                        tg.showAlert("Beeksisa dhiistaniittu ykn rakkoon uumameera.");
+                    });
                 }
             });
         }
 
+        function updateXP(amount) {
+            const xpElement = document.getElementById('user-xp');
+            let currentXP = parseInt(xpElement.innerText.replace(',', ''));
+            xpElement.innerText = (currentXP + amount).toLocaleString();
+        }
+
         function shareLink() {
-            const link = "https://t.me/your_bot_name?start=r" + (userData?.id || "123");
-            tg.openTelegramLink(`https://t.me/share/url?url=${link}&text=Kottu natti makami!`);
+            const link = "https://t.me/Ethio_Coin1_bot/app?start=r" + (userData?.id || "123");
+            tg.openTelegramLink(`https://t.me/share/url?url=${link}&text=Ethio Coin irratti kottu beeksisa ilaalaa XP walitti qabannu!`);
             tg.HapticFeedback.notificationOccurred('success');
         }
     </script>
