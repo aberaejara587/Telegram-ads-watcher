@@ -24,7 +24,6 @@
             overflow: hidden;
         }
 
-        /* Background Animation */
         .bg-glow {
             position: fixed;
             top: -10%;
@@ -44,7 +43,6 @@
             border-radius: 24px;
         }
 
-        /* Navigation Style */
         .nav-bar {
             background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(15px);
@@ -54,6 +52,9 @@
         .nav-item {
             color: #94a3b8;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: none;
+            border: none;
+            cursor: pointer;
         }
 
         .nav-item.active {
@@ -62,7 +63,6 @@
             text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
         }
 
-        /* Smooth Page Transition */
         .page {
             display: none;
             animation: slideUp 0.5s ease;
@@ -106,7 +106,7 @@
             </div>
         </div>
 
-        <div id="content-area" class="flex-1 overflow-y-auto pb-24">
+        <div id="content-area" class="flex-1 overflow-y-auto pb-32">
             
             <div id="home" class="page active">
                 <div class="glass-card p-8 text-center mb-6 relative overflow-hidden">
@@ -134,10 +134,59 @@
                 <div class="space-y-4">
                     <div class="glass-card p-5 flex justify-between items-center border-l-4 border-cyan-500">
                         <div>
-                            <h4 class="font-bold">Video Ad Gold</h4>
+                            <h4 class="font-bold text-sm">Video Ad Gold</h4>
                             <p class="text-xs text-gray-400">+50 XP Per View</p>
                         </div>
-                        <button onclick="watchRealAd()" class="btn-main text-black text-xs font-bold px-4 py-2 rounded-full">ILAALI</button>
+                        <button onclick="watchRealAd()" class="btn-main text-black text-[10px] font-bold px-4 py-2 rounded-full uppercase">Ilaali</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="leaderboard" class="page">
+                <h2 class="text-xl font-bold mb-6 text-center">Sadarkaa Dorgomtootaa</h2>
+                <div class="flex justify-around items-end mb-8 px-2">
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full border-2 border-gray-400 p-0.5 mb-2 relative">
+                            <img src="https://ui-avatars.com/api/?name=Abbe&background=random" class="rounded-full w-full">
+                            <span class="absolute -top-2 -right-2 bg-gray-400 text-black text-[10px] font-bold px-1.5 rounded-full">2</span>
+                        </div>
+                        <p class="text-[10px] font-bold">Abbe</p>
+                        <p class="text-[10px] text-cyan-400">950 XP</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <i class="fa-solid fa-crown text-yellow-400 mb-1 animate-bounce"></i>
+                        <div class="w-16 h-16 rounded-full border-4 border-yellow-500 p-0.5 mb-2 relative shadow-[0_0_20px_rgba(234,179,8,0.4)]">
+                            <img src="https://ui-avatars.com/api/?name=Caalaa&background=random" class="rounded-full w-full">
+                            <span class="absolute -top-2 -right-2 bg-yellow-500 text-black text-[10px] font-bold px-1.5 rounded-full">1</span>
+                        </div>
+                        <p class="text-xs font-bold">Caalaa</p>
+                        <p class="text-xs text-cyan-400 font-bold">1250 XP</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full border-2 border-orange-700 p-0.5 mb-2 relative">
+                            <img src="https://ui-avatars.com/api/?name=Lili&background=random" class="rounded-full w-full">
+                            <span class="absolute -top-2 -right-2 bg-orange-700 text-white text-[10px] font-bold px-1.5 rounded-full">3</span>
+                        </div>
+                        <p class="text-[10px] font-bold">Lili</p>
+                        <p class="text-[10px] text-cyan-400">820 XP</p>
+                    </div>
+                </div>
+                <div class="glass-card overflow-hidden">
+                    <div class="p-4 flex justify-between items-center border-b border-white/5">
+                        <div class="flex items-center gap-4">
+                            <span class="text-gray-500 font-bold w-4">4</span>
+                            <img src="https://ui-avatars.com/api/?name=Banti" class="w-8 h-8 rounded-full">
+                            <span class="text-sm">Banti</span>
+                        </div>
+                        <span class="text-sm font-bold">750 XP</span>
+                    </div>
+                    <div class="p-4 flex justify-between items-center border-b border-white/5 bg-white/10">
+                        <div class="flex items-center gap-4">
+                            <span class="text-cyan-400 font-bold w-4">5</span>
+                            <img id="my-rank-photo" src="https://ui-avatars.com/api/?name=Me" class="w-8 h-8 rounded-full">
+                            <span class="text-sm font-bold text-cyan-400">Ati (Naannoo)</span>
+                        </div>
+                        <span class="text-sm font-bold text-cyan-400">680 XP</span>
                     </div>
                 </div>
             </div>
@@ -159,97 +208,36 @@
                     </div>
                     <h2 class="text-2xl font-bold mb-2">Hiriyaa Affeeri</h2>
                     <p class="text-sm text-gray-400 mb-8 px-6">Hiriyaa tokko yoo affeerte 100 XP fi kaffaltii 10% argatta.</p>
-                    <button onclick="shareLink()" class="btn-main w-full py-4 rounded-2xl text-black font-bold">LINKII KOO GARAGALCHI</button>
+                    <button onclick="shareLink()" class="btn-main w-full py-4 rounded-2xl text-black font-bold uppercase tracking-tight">Copy Invite Link</button>
                 </div>
             </div>
 
         </div>
 
-        <nav class="nav-bar fixed bottom-6 left-6 right-6 h-18 rounded-3xl flex justify-around items-center px-4 shadow-2xl">
+        <nav class="nav-bar fixed bottom-6 left-4 right-4 h-20 rounded-3xl flex justify-around items-center px-2 shadow-2xl z-50">
             <button onclick="showSection('home', this)" class="nav-item active flex flex-col items-center">
-                <i class="fa-solid fa-house-chimney text-xl"></i>
-                <span class="text-[9px] font-medium mt-1">Home</span>
+                <i class="fa-solid fa-house-chimney text-lg"></i>
+                <span class="text-[8px] font-medium mt-1">Home</span>
             </button>
             <button onclick="showSection('ads', this)" class="nav-item flex flex-col items-center">
-                <i class="fa-solid fa-clapperboard text-xl"></i>
-                <span class="text-[9px] font-medium mt-1">Ads</span>
+                <i class="fa-solid fa-play text-lg"></i>
+                <span class="text-[8px] font-medium mt-1">Ads</span>
+            </button>
+            <button onclick="showSection('leaderboard', this)" class="nav-item flex flex-col items-center">
+                <i class="fa-solid fa-ranking-star text-lg"></i>
+                <span class="text-[8px] font-medium mt-1">Rank</span>
             </button>
             <button onclick="showSection('wallet', this)" class="nav-item flex flex-col items-center">
-                <i class="fa-solid fa-wallet text-xl"></i>
-                <span class="text-[9px] font-medium mt-1">Wallet</span>
+                <i class="fa-solid fa-wallet text-lg"></i>
+                <span class="text-[8px] font-medium mt-1">Wallet</span>
             </button>
             <button onclick="showSection('invite', this)" class="nav-item flex flex-col items-center">
-                <i class="fa-solid fa-user-group text-xl"></i>
-                <span class="text-[9px] font-medium mt-1">Invite</span>
+                <i class="fa-solid fa-user-plus text-lg"></i>
+                <span class="text-[8px] font-medium mt-1">Invite</span>
             </button>
         </nav>
 
     </div>
-  <button onclick="showSection('leaderboard', this)" class="nav-item flex flex-col items-center">
-    <i class="fa-solid fa-ranking-star text-xl"></i>
-    <span class="text-[9px] font-medium mt-1">Rank</span>
-</button>
-
-<div id="leaderboard" class="page">
-    <h2 class="text-xl font-bold mb-6 text-center">Sadarkaa Dorgomtootaa</h2>
-    
-    <div class="flex justify-around items-end mb-8 px-2">
-        <div class="flex flex-col items-center">
-            <div class="w-12 h-12 rounded-full border-2 border-gray-400 p-0.5 mb-2 relative">
-                <img src="https://ui-avatars.com/api/?name=Abbe&background=random" class="rounded-full w-full">
-                <span class="absolute -top-2 -right-2 bg-gray-400 text-black text-[10px] font-bold px-1.5 rounded-full">2</span>
-            </div>
-            <p class="text-[10px] font-bold">Abbe</p>
-            <p class="text-[10px] text-cyan-400">950 XP</p>
-        </div>
-
-        <div class="flex flex-col items-center">
-            <i class="fa-solid fa-crown text-yellow-400 mb-1 animate-bounce"></i>
-            <div class="w-16 h-16 rounded-full border-4 border-yellow-500 p-0.5 mb-2 relative shadow-[0_0_20px_rgba(234,179,8,0.4)]">
-                <img src="https://ui-avatars.com/api/?name=Caalaa&background=random" class="rounded-full w-full">
-                <span class="absolute -top-2 -right-2 bg-yellow-500 text-black text-[10px] font-bold px-1.5 rounded-full">1</span>
-            </div>
-            <p class="text-xs font-bold">Caalaa</p>
-            <p class="text-xs text-cyan-400 font-bold">1250 XP</p>
-        </div>
-
-        <div class="flex flex-col items-center">
-            <div class="w-12 h-12 rounded-full border-2 border-orange-700 p-0.5 mb-2 relative">
-                <img src="https://ui-avatars.com/api/?name=Lili&background=random" class="rounded-full w-full">
-                <span class="absolute -top-2 -right-2 bg-orange-700 text-white text-[10px] font-bold px-1.5 rounded-full">3</span>
-            </div>
-            <p class="text-[10px] font-bold">Lili</p>
-            <p class="text-[10px] text-cyan-400">820 XP</p>
-        </div>
-    </div>
-
-    <div class="glass-card overflow-hidden">
-        <div class="p-4 flex justify-between items-center border-b border-white/5">
-            <div class="flex items-center gap-4">
-                <span class="text-gray-500 font-bold w-4">4</span>
-                <img src="https://ui-avatars.com/api/?name=Banti" class="w-8 h-8 rounded-full">
-                <span class="text-sm">Banti</span>
-            </div>
-            <span class="text-sm font-bold">750 XP</span>
-        </div>
-        <div class="p-4 flex justify-between items-center border-b border-white/5 bg-white/5">
-            <div class="flex items-center gap-4">
-                <span class="text-cyan-400 font-bold w-4">5</span>
-                <img src="https://ui-avatars.com/api/?name=Keek" class="w-8 h-8 rounded-full">
-                <span class="text-sm font-bold text-cyan-400">Ati (Naannoo)</span>
-            </div>
-            <span class="text-sm font-bold text-cyan-400">680 XP</span>
-        </div>
-        <div class="p-4 flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <span class="text-gray-500 font-bold w-4">6</span>
-                <img src="https://ui-avatars.com/api/?name=Soli" class="w-8 h-8 rounded-full">
-                <span class="text-sm">Soli</span>
-            </div>
-            <span class="text-sm font-bold">610 XP</span>
-        </div>
-    </div>
-</div>
 
     <script>
         let tg = window.Telegram.WebApp;
@@ -262,6 +250,7 @@
             document.getElementById('user-name').innerText = userData.first_name;
             if(userData.photo_url) {
                 document.getElementById('user-photo').src = userData.photo_url;
+                document.getElementById('my-rank-photo').src = userData.photo_url;
             }
         }
 
@@ -285,7 +274,7 @@
                     setTimeout(() => {
                         tg.MainButton.hide();
                         tg.showPopup({
-                            title: 'Milkaa'eera!',
+                            title: 'Milkaa\'eera!',
                             message: '50 XP argatteetta.',
                             buttons: [{type: 'ok'}]
                         });
@@ -301,4 +290,4 @@
         }
     </script>
 </body>
-  </html>
+</html>
