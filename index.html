@@ -255,7 +255,8 @@
 
         // ADSGRAM INITIALIZATION
         const RewardAdController = window.Adsgram.init({ blockId: "24434" });
-        const TaskAdController = window.Adsgram.init({ blockId: "25392" }); // Task ID haaraa
+        const TaskAdController = window.Adsgram.init({ blockId: "25392" });
+        const InterstitialAdController = window.Adsgram.init({ blockId: "25398" }); // Interstitial ID haaraa
 
         // Load User Data
         const userData = tg.initDataUnsafe?.user;
@@ -267,15 +268,20 @@
             }
         }
 
+        // Section Change with Interstitial Logic
         function showSection(id, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             element.classList.add('active');
             tg.HapticFeedback.impactOccurred('medium');
+
+            // Akka tasaa (randomly) beeksisa Interstitial agarsiisuu (fakkeenyaaf 30% carraa)
+            if (Math.random() < 0.3) {
+                InterstitialAdController.show().catch((e) => console.log("Interstitial skip or error"));
+            }
         }
 
-        // Function for Video Reward Ad
         function watchRewardAd() {
             tg.showConfirm("Beeksisa ilaaluun 50 XP argachuu barbaadduu?", (confirmed) => {
                 if(confirmed) {
@@ -292,7 +298,6 @@
             });
         }
 
-        // Function for Task Ad (New)
         function watchTaskAd() {
             tg.showConfirm("Hojii kana xumuruun 100 XP argachuu barbaadduu?", (confirmed) => {
                 if(confirmed) {
