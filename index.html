@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Premium App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0088cc;
+            --secondary: #00ffcc;
+            --bg-dark: #0a0f1d;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* Background Animation */
+        .bg-glow {
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle at 50% 50%, #1e3a8a 0%, transparent 50%);
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border-radius: 24px;
+        }
+
+        /* Navigation Style */
+        .nav-bar {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item {
+            color: #94a3b8;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .nav-item.active {
+            color: var(--secondary);
+            transform: translateY(-8px);
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+        }
+
+        /* Smooth Page Transition */
+        .page {
+            display: none;
+            animation: slideUp 0.5s ease;
+        }
+
+        .page.active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-main {
+            background: linear-gradient(135deg, #0088cc 0%, #00ffcc 100%);
+            box-shadow: 0 4px 15px rgba(0, 255, 204, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn-main:active { transform: scale(0.96); }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="p-6 h-screen flex flex-col">
+
+        <div class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full border-2 border-cyan-400 p-0.5">
+                    <img id="user-photo" src="https://ui-avatars.com/api/?name=User&background=random" class="rounded-full">
+                </div>
+                <div>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest">Baga Dhufte</p>
+                    <h2 id="user-name" class="font-bold text-sm">Fayyadamaa</h2>
+                </div>
+            </div>
+            <div class="glass-card px-3 py-1 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-yellow-400 text-xs"></i>
+                <span class="text-xs font-bold">PRO</span>
+            </div>
+        </div>
+
+        <div id="content-area" class="flex-1 overflow-y-auto pb-24">
+            
+            <div id="home" class="page active">
+                <div class="glass-card p-8 text-center mb-6 relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl"></div>
+                    <p class="text-gray-400 text-sm mb-2">Qabeenya Keessan</p>
+                    <h1 class="text-5xl font-black tracking-tight mb-2">1,250 <span class="text-lg text-cyan-400">XP</span></h1>
+                    <p class="text-xs text-green-400"><i class="fa-solid fa-arrow-up"></i> +15% har'a</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-card p-4 flex flex-col items-center">
+                        <i class="fa-solid fa-trophy text-orange-400 mb-2"></i>
+                        <p class="text-[10px] text-gray-400">Rank</p>
+                        <p class="font-bold">#452</p>
+                    </div>
+                    <div class="glass-card p-4 flex flex-col items-center">
+                        <i class="fa-solid fa-calendar-check text-blue-400 mb-2"></i>
+                        <p class="text-[10px] text-gray-400">Daily Streak</p>
+                        <p class="font-bold">5 Days</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ads" class="page">
+                <h2 class="text-xl font-bold mb-4">Beeksisa Ilaaluun Hojjedhu</h2>
+                <div class="space-y-4">
+                    <div class="glass-card p-5 flex justify-between items-center border-l-4 border-cyan-500">
+                        <div>
+                            <h4 class="font-bold">Video Ad Gold</h4>
+                            <p class="text-xs text-gray-400">+50 XP Per View</p>
+                        </div>
+                        <button onclick="watchRealAd()" class="btn-main text-black text-xs font-bold px-4 py-2 rounded-full">ILAALI</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="wallet" class="page">
+                <h2 class="text-xl font-bold mb-4">Walleetii Kee</h2>
+                <div class="glass-card p-6 border border-white/10 mb-6">
+                    <p class="text-xs text-gray-400 mb-4">Walleetii kee TON waliin walitti qabsiisi.</p>
+                    <button class="w-full bg-white text-black font-bold py-4 rounded-2xl flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wallet"></i> Connect TON
+                    </button>
+                </div>
+            </div>
+
+            <div id="invite" class="page">
+                <div class="text-center mt-10">
+                    <div class="w-20 h-20 bg-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-gift text-3xl text-cyan-400"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-2">Hiriyaa Affeeri</h2>
+                    <p class="text-sm text-gray-400 mb-8 px-6">Hiriyaa tokko yoo affeerte 100 XP fi kaffaltii 10% argatta.</p>
+                    <button onclick="shareLink()" class="btn-main w-full py-4 rounded-2xl text-black font-bold">LINKII KOO GARAGALCHI</button>
+                </div>
+            </div>
+
+        </div>
+
+        <nav class="nav-bar fixed bottom-6 left-6 right-6 h-18 rounded-3xl flex justify-around items-center px-4 shadow-2xl">
+            <button onclick="showSection('home', this)" class="nav-item active flex flex-col items-center">
+                <i class="fa-solid fa-house-chimney text-xl"></i>
+                <span class="text-[9px] font-medium mt-1">Home</span>
+            </button>
+            <button onclick="showSection('ads', this)" class="nav-item flex flex-col items-center">
+                <i class="fa-solid fa-clapperboard text-xl"></i>
+                <span class="text-[9px] font-medium mt-1">Ads</span>
+            </button>
+            <button onclick="showSection('wallet', this)" class="nav-item flex flex-col items-center">
+                <i class="fa-solid fa-wallet text-xl"></i>
+                <span class="text-[9px] font-medium mt-1">Wallet</span>
+            </button>
+            <button onclick="showSection('invite', this)" class="nav-item flex flex-col items-center">
+                <i class="fa-solid fa-user-group text-xl"></i>
+                <span class="text-[9px] font-medium mt-1">Invite</span>
+            </button>
+        </nav>
+
+    </div>
+  <button onclick="showSection('leaderboard', this)" class="nav-item flex flex-col items-center">
+    <i class="fa-solid fa-ranking-star text-xl"></i>
+    <span class="text-[9px] font-medium mt-1">Rank</span>
+</button>
+
+<div id="leaderboard" class="page">
+    <h2 class="text-xl font-bold mb-6 text-center">Sadarkaa Dorgomtootaa</h2>
+    
+    <div class="flex justify-around items-end mb-8 px-2">
+        <div class="flex flex-col items-center">
+            <div class="w-12 h-12 rounded-full border-2 border-gray-400 p-0.5 mb-2 relative">
+                <img src="https://ui-avatars.com/api/?name=Abbe&background=random" class="rounded-full w-full">
+                <span class="absolute -top-2 -right-2 bg-gray-400 text-black text-[10px] font-bold px-1.5 rounded-full">2</span>
+            </div>
+            <p class="text-[10px] font-bold">Abbe</p>
+            <p class="text-[10px] text-cyan-400">950 XP</p>
+        </div>
+
+        <div class="flex flex-col items-center">
+            <i class="fa-solid fa-crown text-yellow-400 mb-1 animate-bounce"></i>
+            <div class="w-16 h-16 rounded-full border-4 border-yellow-500 p-0.5 mb-2 relative shadow-[0_0_20px_rgba(234,179,8,0.4)]">
+                <img src="https://ui-avatars.com/api/?name=Caalaa&background=random" class="rounded-full w-full">
+                <span class="absolute -top-2 -right-2 bg-yellow-500 text-black text-[10px] font-bold px-1.5 rounded-full">1</span>
+            </div>
+            <p class="text-xs font-bold">Caalaa</p>
+            <p class="text-xs text-cyan-400 font-bold">1250 XP</p>
+        </div>
+
+        <div class="flex flex-col items-center">
+            <div class="w-12 h-12 rounded-full border-2 border-orange-700 p-0.5 mb-2 relative">
+                <img src="https://ui-avatars.com/api/?name=Lili&background=random" class="rounded-full w-full">
+                <span class="absolute -top-2 -right-2 bg-orange-700 text-white text-[10px] font-bold px-1.5 rounded-full">3</span>
+            </div>
+            <p class="text-[10px] font-bold">Lili</p>
+            <p class="text-[10px] text-cyan-400">820 XP</p>
+        </div>
+    </div>
+
+    <div class="glass-card overflow-hidden">
+        <div class="p-4 flex justify-between items-center border-b border-white/5">
+            <div class="flex items-center gap-4">
+                <span class="text-gray-500 font-bold w-4">4</span>
+                <img src="https://ui-avatars.com/api/?name=Banti" class="w-8 h-8 rounded-full">
+                <span class="text-sm">Banti</span>
+            </div>
+            <span class="text-sm font-bold">750 XP</span>
+        </div>
+        <div class="p-4 flex justify-between items-center border-b border-white/5 bg-white/5">
+            <div class="flex items-center gap-4">
+                <span class="text-cyan-400 font-bold w-4">5</span>
+                <img src="https://ui-avatars.com/api/?name=Keek" class="w-8 h-8 rounded-full">
+                <span class="text-sm font-bold text-cyan-400">Ati (Naannoo)</span>
+            </div>
+            <span class="text-sm font-bold text-cyan-400">680 XP</span>
+        </div>
+        <div class="p-4 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <span class="text-gray-500 font-bold w-4">6</span>
+                <img src="https://ui-avatars.com/api/?name=Soli" class="w-8 h-8 rounded-full">
+                <span class="text-sm">Soli</span>
+            </div>
+            <span class="text-sm font-bold">610 XP</span>
+        </div>
+    </div>
+</div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.enableClosingConfirmation();
+
+        // Load User Data
+        const userData = tg.initDataUnsafe?.user;
+        if(userData) {
+            document.getElementById('user-name').innerText = userData.first_name;
+            if(userData.photo_url) {
+                document.getElementById('user-photo').src = userData.photo_url;
+            }
+        }
+
+        function showSection(id, element) {
+            // Switch Active Page
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+
+            // Switch Active Nav Icon
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            element.classList.add('active');
+
+            // Vibration Effect
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        function watchRealAd() {
+            tg.showConfirm("Beeksisa ilaaluun 50 XP argachuu barbaadduu?", (confirmed) => {
+                if(confirmed) {
+                    tg.MainButton.setText("BEEKSISA FE'AA JIRA...").show();
+                    setTimeout(() => {
+                        tg.MainButton.hide();
+                        tg.showPopup({
+                            title: 'Milkaa'eera!',
+                            message: '50 XP argatteetta.',
+                            buttons: [{type: 'ok'}]
+                        });
+                    }, 2000);
+                }
+            });
+        }
+
+        function shareLink() {
+            const link = "https://t.me/your_bot_name?start=r" + (userData?.id || "123");
+            tg.openTelegramLink(`https://t.me/share/url?url=${link}&text=Kottu natti makami!`);
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+    </script>
+</body>
+  </html>
