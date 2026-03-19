@@ -78,11 +78,6 @@
             text-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
         }
 
-        .rank-item {
-            background: rgba(255, 255, 255, 0.02);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
         #leaderboard-scroll::-webkit-scrollbar { width: 4px; }
         #leaderboard-scroll::-webkit-scrollbar-thumb { background: rgba(0, 255, 204, 0.2); border-radius: 10px; }
     </style>
@@ -233,16 +228,16 @@
         tg.expand();
         tg.enableClosingConfirmation();
 
-        // --- BLOCK ID SIRREEFFAMAN ---
-        // 'int-' prefix-n balleeffameera sababa dogongora uumaa tureef
-        const REWARD_ID = "25444";
-        const INTERSTITIAL_ID = "25445"; // Lakkoofsa qofa
-        const TASK_ID = "task-25446";    // 'task-' prefix dirqama ni barbaachisa
+        // --- ADSGRAM CONFIGURATION (SIRREEFFAMEERA) ---
+        const REWARD_ID = "25444"; 
+        const INTERSTITIAL_ID = "25445"; 
+        const TASK_ID = "task-25446"; 
 
         const AdController = window.Adsgram.init({ blockId: REWARD_ID });
         const InterstitialAd = window.Adsgram.init({ blockId: INTERSTITIAL_ID });
         const TaskAd = window.Adsgram.init({ blockId: TASK_ID });
 
+        // --- STATE MANAGEMENT ---
         let balance = parseFloat(localStorage.getItem('gem_bal')) || 0.00;
         let walletAddress = localStorage.getItem('gem_wallet') || "";
 
@@ -256,9 +251,6 @@
                 document.getElementById('wallet-input').value = walletAddress;
                 document.getElementById('wallet-connect-ui').classList.add('hidden');
                 document.getElementById('wallet-connected-ui').classList.remove('hidden');
-            } else {
-                document.getElementById('wallet-connect-ui').classList.remove('hidden');
-                document.getElementById('wallet-connected-ui').classList.add('hidden');
             }
             
             let rank = "Bronze";
@@ -270,47 +262,7 @@
             localStorage.setItem('gem_bal', balance);
         }
 
-        function openTelegramWallet() {
-            tg.HapticFeedback.impactOccurred('medium');
-            tg.showConfirm("Gara TON Wallet keetti si geessuun address kee connect gochuu barbaadda?", (confirmed) => {
-                if(confirmed) {
-                    tg.openTelegramLink('https://t.me/wallet/start?startapp=connect');
-                    tg.showPopup({
-                        title: 'Connecting...',
-                        message: 'Wallet address kee simachaa jirra...',
-                        buttons: [{type: 'destructive', text: 'Wait'}]
-                    });
-
-                    setTimeout(() => {
-                        let randomAddr = "UQ" + Math.random().toString(36).substring(2, 12).toUpperCase() + "..." + Math.random().toString(36).substring(2, 6).toUpperCase();
-                        walletAddress = randomAddr;
-                        localStorage.setItem('gem_wallet', randomAddr);
-                        updateUI();
-                        tg.HapticFeedback.notificationOccurred('success');
-                    }, 3000);
-                }
-            });
-        }
-
-        function shareLink() {
-            const userId = tg.initDataUnsafe?.user?.id || "12345";
-            const link = `https://t.me/Ethio_Coin1_bot/app?start=r${userId}`;
-            const text = "Kottu maallaqa doolaaraan kaffalu kana waliin hojjennaa! 💰";
-            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`);
-            tg.HapticFeedback.impactOccurred('heavy');
-        }
-
-        function boostRank() {
-            InterstitialAd.show().then(() => {
-                tg.showAlert("Boost Successful! Rank kee ol deebi'uuf qophaa'eera.");
-                balance += 0.01;
-                updateUI();
-            }).catch((err) => {
-                console.error(err);
-                tg.showAlert("Boost gochuuf Ad ilaaluu qabda.");
-            });
-        }
-
+        // --- ACTIONS ---
         function watchAd() {
             AdController.show().then(() => {
                 balance += 0.10;
@@ -323,20 +275,44 @@
             TaskAd.show().then(() => {
                 balance += 0.05;
                 updateUI();
-            }).catch((err) => {
-                console.error(err);
-                tg.showAlert("Task Ad Loading Failed.");
+                tg.HapticFeedback.notificationOccurred('success');
+            }).catch(() => tg.showAlert("Task Ad Loading Failed."));
+        }
+
+        function boostRank() {
+            InterstitialAd.show().then(() => {
+                balance += 0.01;
+                updateUI();
+                tg.showAlert("Boost Successful! Rank kee ol deebi'uuf qophaa'eera.");
+            }).catch(() => tg.showAlert("Ad Loading Failed."));
+        }
+
+        function openTelegramWallet() {
+            tg.HapticFeedback.impactOccurred('medium');
+            tg.showConfirm("Connect your TON Wallet?", (confirmed) => {
+                if(confirmed) {
+                    setTimeout(() => {
+                        let randomAddr = "UQ" + Math.random().toString(36).substring(2, 10).toUpperCase() + "...TON";
+                        walletAddress = randomAddr;
+                        localStorage.setItem('gem_wallet', randomAddr);
+                        updateUI();
+                        tg.HapticFeedback.notificationOccurred('success');
+                    }, 2000);
+                }
             });
+        }
+
+        function shareLink() {
+            const userId = tg.initDataUnsafe?.user?.id || "000";
+            const link = `https://t.me/Ethio_Coin1_bot/app?start=r${userId}`;
+            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Join me and earn!`);
         }
 
         function showSection(id, btn) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            
-            if(btn && btn.classList.contains('nav-item')) {
-                btn.classList.add('active');
-            }
+            if(btn && btn.classList.contains('nav-item')) btn.classList.add('active');
             tg.HapticFeedback.impactOccurred('light');
         }
 
@@ -344,21 +320,21 @@
             const list = document.getElementById('member-list');
             const names = ["Abbebe", "Chala", "Lensa", "Tolasa", "Biftu", "Mulu", "Kiya", "Obsa", "Hana", "Sola"];
             let html = "";
-            for (let i = 1; i <= 100; i++) {
-                let name = names[i % 10] + "_" + (100 + i);
-                html += `<div class="rank-item flex items-center justify-between p-4 rounded-2xl opacity-80">
+            for (let i = 1; i <= 20; i++) {
+                html += `<div class="rank-item flex items-center justify-between p-4 rounded-2xl opacity-80 border-b border-white/5">
                             <div class="flex items-center gap-3">
-                                <span class="text-xs font-bold ${i < 4 ? 'text-yellow-400' : 'text-gray-500'}">${i}</span>
-                                <p class="text-sm font-medium text-gray-200">${name}</p>
+                                <span class="text-xs font-bold ${i < 4 ? 'text-yellow-400' : 'text-gray-500'}">#${i}</span>
+                                <p class="text-sm font-medium">${names[i % 10]}</p>
                             </div>
-                            <span class="text-sm font-bold text-cyan-400">$${(Math.random()*100).toFixed(2)}</span>
+                            <span class="text-sm font-bold text-cyan-400">$${(Math.random()*50).toFixed(2)}</span>
                          </div>`;
             }
             list.innerHTML = html;
         }
 
+        // --- INITIALIZE ---
         const user = tg.initDataUnsafe?.user;
-        document.getElementById('user-name').innerText = user?.first_name || "Guest User";
+        document.getElementById('user-name').innerText = user?.first_name || "Guest";
         document.getElementById('user-photo').src = user?.photo_url || `https://ui-avatars.com/api/?name=${user?.first_name || 'U'}&background=0088cc&color=fff`;
         
         generateLeaderboard();
