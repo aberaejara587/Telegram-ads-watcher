@@ -233,10 +233,11 @@
         tg.expand();
         tg.enableClosingConfirmation();
 
-        // AD IDs
+        // --- BLOCK ID SIRREEFFAMAN ---
+        // 'int-' fi 'task-' prefix-ootni dabalaniiru akka AdsgramError hin uumamneef
         const REWARD_ID = "25444";
-        const INTERSTITIAL_ID = "25445";
-        const TASK_ID = "25446";
+        const INTERSTITIAL_ID = "int-25445";
+        const TASK_ID = "task-25446";
 
         const AdController = window.Adsgram.init({ blockId: REWARD_ID });
         const InterstitialAd = window.Adsgram.init({ blockId: INTERSTITIAL_ID });
@@ -260,7 +261,6 @@
                 document.getElementById('wallet-connected-ui').classList.add('hidden');
             }
             
-            // Level Logic
             let rank = "Bronze";
             if(balance > 10) rank = "Silver";
             if(balance > 50) rank = "Gold";
@@ -270,16 +270,11 @@
             localStorage.setItem('gem_bal', balance);
         }
 
-        // --- WALLET CONNECTION ---
         function openTelegramWallet() {
             tg.HapticFeedback.impactOccurred('medium');
-            
             tg.showConfirm("Gara TON Wallet keetti si geessuun address kee connect gochuu barbaadda?", (confirmed) => {
                 if(confirmed) {
-                    // Telegram Wallet Link (kallattiin gara wallet bot ykn app)
                     tg.openTelegramLink('https://t.me/wallet/start?startapp=connect');
-                    
-                    // Demo Connection (Erga inni achii deebi'ee booda akka connected ta'e gochuuf)
                     tg.showPopup({
                         title: 'Connecting...',
                         message: 'Wallet address kee simachaa jirra...',
@@ -297,7 +292,6 @@
             });
         }
 
-        // --- INVITE SYSTEM ---
         function shareLink() {
             const userId = tg.initDataUnsafe?.user?.id || "12345";
             const link = `https://t.me/Ethio_Coin1_bot/app?start=r${userId}`;
@@ -306,7 +300,6 @@
             tg.HapticFeedback.impactOccurred('heavy');
         }
 
-        // --- BOOST RANK ---
         function boostRank() {
             InterstitialAd.show().then(() => {
                 tg.showAlert("Boost Successful! Rank kee ol deebi'uuf qophaa'eera.");
@@ -317,20 +310,22 @@
             });
         }
 
-        // --- ADS FUNCTIONS ---
         function watchAd() {
             AdController.show().then(() => {
                 balance += 0.10;
                 updateUI();
                 tg.HapticFeedback.notificationOccurred('success');
-            }).catch(() => tg.showAlert("Ad Loading Failed."));
+            }).catch(() => tg.showAlert("Ad Loading Failed. Try again later."));
         }
 
         function watchTaskAd() {
             TaskAd.show().then(() => {
                 balance += 0.05;
                 updateUI();
-            }).catch(() => tg.showAlert("Task not available."));
+            }).catch((err) => {
+                console.error(err);
+                tg.showAlert("Task Ad Loading Failed.");
+            });
         }
 
         function showSection(id, btn) {
@@ -338,11 +333,9 @@
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             
-            // Set active class on nav
             if(btn && btn.classList.contains('nav-item')) {
                 btn.classList.add('active');
             }
-            
             tg.HapticFeedback.impactOccurred('light');
         }
 
@@ -363,7 +356,6 @@
             list.innerHTML = html;
         }
 
-        // Initial Data
         const user = tg.initDataUnsafe?.user;
         document.getElementById('user-name').innerText = user?.first_name || "Guest User";
         document.getElementById('user-photo').src = user?.photo_url || `https://ui-avatars.com/api/?name=${user?.first_name || 'U'}&background=0088cc&color=fff`;
