@@ -234,10 +234,10 @@
         tg.enableClosingConfirmation();
 
         // --- BLOCK ID SIRREEFFAMAN ---
-        // 'int-' fi 'task-' prefix-ootni dabalaniiru akka AdsgramError hin uumamneef
+        // 'int-' prefix-n balleeffameera sababa dogongora uumaa tureef
         const REWARD_ID = "25444";
-        const INTERSTITIAL_ID = "int-25445";
-        const TASK_ID = "task-25446";
+        const INTERSTITIAL_ID = "25445"; // Lakkoofsa qofa
+        const TASK_ID = "task-25446";    // 'task-' prefix dirqama ni barbaachisa
 
         const AdController = window.Adsgram.init({ blockId: REWARD_ID });
         const InterstitialAd = window.Adsgram.init({ blockId: INTERSTITIAL_ID });
@@ -305,7 +305,8 @@
                 tg.showAlert("Boost Successful! Rank kee ol deebi'uuf qophaa'eera.");
                 balance += 0.01;
                 updateUI();
-            }).catch(() => {
+            }).catch((err) => {
+                console.error(err);
                 tg.showAlert("Boost gochuuf Ad ilaaluu qabda.");
             });
         }
