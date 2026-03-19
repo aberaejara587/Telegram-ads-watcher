@@ -78,22 +78,15 @@
             text-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
         }
 
-        .btn-gradient {
-            background: linear-gradient(135deg, #0088cc, #00ffcc);
-            color: black;
-            font-weight: 800;
-        }
-
         .rank-item {
             background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: 0.3s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
-        
-        .rank-item:hover { background: rgba(255, 255, 255, 0.05); }
 
-        /* Custom Scrollbar */
-        #content-area::-webkit-scrollbar { width: 0px; }
+        /* Scrollbar styling for leaderboard */
+        #leaderboard-scroll::-webkit-scrollbar { width: 4px; }
+        #leaderboard-scroll::-webkit-scrollbar-track { background: transparent; }
+        #leaderboard-scroll::-webkit-scrollbar-thumb { background: rgba(0, 255, 204, 0.2); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -105,13 +98,13 @@
         <div class="flex justify-between items-center mb-6">
             <div class="flex items-center gap-3">
                 <div class="w-11 h-11 rounded-full border-2 border-cyan-500/50 p-0.5">
-                    <img id="user-photo" src="https://ui-avatars.com/api/?name=User" class="rounded-full w-full h-full">
+                    <img id="user-photo" src="" class="rounded-full w-full h-full">
                 </div>
                 <div>
-                    <h2 id="user-name" class="font-bold text-sm italic">Loading...</h2>
+                    <h2 id="user-name" class="font-bold text-sm italic">User</h2>
                     <div class="flex items-center gap-1">
                         <div id="status-dot" class="w-1.5 h-1.5 rounded-full bg-gray-500"></div>
-                        <p id="wallet-status" class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Unconnected</p>
+                        <p id="wallet-status" class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Disconnected</p>
                     </div>
                 </div>
             </div>
@@ -124,118 +117,89 @@
         <div id="content-area" class="flex-1 overflow-y-auto pb-32">
             
             <div id="home" class="page active">
-                <div class="glass-card p-10 text-center mb-6 relative overflow-hidden border-t border-white/10">
-                    <p class="text-gray-400 text-xs mb-3 font-medium uppercase tracking-widest">Current Balance</p>
+                <div class="glass-card p-10 text-center mb-6 border-t border-white/10">
+                    <p class="text-gray-400 text-xs mb-3 font-medium uppercase">Current Balance</p>
                     <h1 class="text-6xl font-extrabold balance-glow mb-4 italic">
                         $<span id="user-balance">0.00</span>
                     </h1>
                     <div class="flex gap-3 justify-center">
                         <button onclick="showSection('wallet', this)" class="bg-white/10 px-6 py-2 rounded-full text-[10px] font-bold uppercase border border-white/5">Withdraw</button>
-                        <button onclick="showSection('deposit', this)" class="btn-gradient px-6 py-2 rounded-full text-[10px] uppercase shadow-lg shadow-cyan-500/20">Deposit</button>
+                        <button onclick="showSection('deposit', this)" class="bg-gradient-to-r from-blue-600 to-cyan-400 text-black px-6 py-2 rounded-full text-[10px] font-bold uppercase shadow-lg">Deposit</button>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="glass-card p-5 flex flex-col items-center border-l-2 border-orange-500">
                         <i class="fa-solid fa-crown text-orange-400 mb-2"></i>
-                        <p class="text-[10px] text-gray-500 font-bold uppercase">Level</p>
+                        <p class="text-[10px] text-gray-500 font-bold">LEVEL</p>
                         <p id="user-rank-val" class="font-bold text-lg">Bronze</p>
                     </div>
                     <div onclick="showSection('leaderboard', this)" class="glass-card p-5 flex flex-col items-center border-l-2 border-cyan-500 cursor-pointer">
                         <i class="fa-solid fa-ranking-star text-cyan-400 mb-2"></i>
-                        <p class="text-[10px] text-gray-500 font-bold uppercase">My Rank</p>
-                        <p class="font-bold text-lg">#1</p>
+                        <p class="text-[10px] text-gray-500 font-bold">MY RANK</p>
+                        <p id="my-rank-pos" class="font-bold text-lg">#1</p>
                     </div>
                 </div>
             </div>
 
             <div id="wallet" class="page">
-                <h2 class="text-xl font-bold mb-4 italic">Connect Wallet</h2>
-                <div class="glass-card p-6 mb-6">
-                    <div class="flex items-center gap-4 mb-6 p-4 bg-cyan-500/10 rounded-2xl border border-cyan-500/20">
-                        <i class="fa-solid fa-wallet text-cyan-400 text-2xl"></i>
-                        <p class="text-[11px] text-gray-300">Telegram Wallet kee fayyadamuun address kee asitti connect godhi.</p>
+                <h2 class="text-xl font-bold mb-4 italic text-cyan-400">TON Wallet</h2>
+                <div class="glass-card p-6">
+                    <div class="bg-blue-500/10 p-4 rounded-2xl border border-blue-500/20 mb-6">
+                        <p class="text-[11px] text-blue-200">Address kee connect gochuun kaffaltii kee kallattiin fudhadhu.</p>
                     </div>
                     
-                    <button onclick="openTelegramWallet()" class="w-full bg-[#0088cc] hover:bg-[#0077bb] py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-3 transition-all mb-6">
-                        <i class="fa-brands fa-telegram text-xl"></i>
-                        Open Telegram Wallet
+                    <button id="main-wallet-btn" onclick="openTelegramWallet()" class="w-full bg-[#0088cc] py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-3 transition-all mb-4">
+                        <i class="fa-solid fa-link"></i>
+                        CONNECT TON WALLET
                     </button>
 
-                    <div class="relative">
-                        <label class="text-[10px] text-gray-500 font-bold uppercase mb-2 block ml-2">Paste TON Address Here</label>
-                        <input id="wallet-input" type="text" placeholder="UQ... ykn Address kee galchi" class="w-full bg-black/30 border border-white/10 p-4 rounded-2xl text-xs focus:outline-none focus:border-cyan-500 transition mb-4">
-                    </div>
-
-                    <button id="connect-btn" onclick="connectWallet()" class="w-full btn-gradient py-4 rounded-2xl text-sm shadow-xl">
-                        CONFIRM ADDRESS
-                    </button>
+                    <input id="wallet-input" type="text" placeholder="Wallet Address (UQ...)" class="w-full bg-black/30 border border-white/10 p-4 rounded-2xl text-xs focus:outline-none focus:border-cyan-500 mb-4" readonly>
+                    
+                    <p class="text-[10px] text-gray-500 text-center italic">Yeroo 'Connect' tuqxu address kee kallattiin fudhatama.</p>
                 </div>
             </div>
 
             <div id="leaderboard" class="page">
-                <h2 class="text-xl font-bold mb-6 text-center italic">Champions League</h2>
-                <div class="glass-card p-3 space-y-2">
-                    <div class="flex items-center justify-between p-4 bg-cyan-500/20 rounded-2xl border border-cyan-500/30">
-                        <div class="flex items-center gap-3">
-                            <span class="text-lg font-black text-cyan-400">1.</span>
-                            <img id="lb-user-photo" src="" class="w-10 h-10 rounded-full border-2 border-white/20">
-                            <div>
-                                <p id="lb-user-name" class="text-sm font-bold">You</p>
-                                <p class="text-[9px] text-green-400 uppercase font-bold">Active</p>
-                            </div>
-                        </div>
-                        <span id="lb-user-balance" class="text-sm font-bold text-white">$0.00</span>
-                    </div>
-
-                    <div id="other-ranks" class="space-y-2">
-                        <div class="rank-item flex items-center justify-between p-4 rounded-2xl">
+                <h2 class="text-xl font-bold mb-4 text-center italic">Top 100 Champions</h2>
+                <div class="glass-card p-2">
+                    <div id="leaderboard-scroll" class="max-h-[60vh] overflow-y-auto pr-1">
+                        <div class="flex items-center justify-between p-4 bg-cyan-500/20 rounded-2xl border border-cyan-500/30 mb-2">
                             <div class="flex items-center gap-3">
-                                <span class="text-gray-500 font-bold italic">2.</span>
-                                <img src="https://ui-avatars.com/api/?name=Ali+H&background=random" class="w-9 h-9 rounded-full opacity-70">
-                                <p class="text-sm text-gray-300 font-medium">Ali Crypto</p>
+                                <span class="text-lg font-black text-cyan-400">1</span>
+                                <img id="lb-user-photo" src="" class="w-10 h-10 rounded-full border border-white/20">
+                                <div>
+                                    <p id="lb-user-name" class="text-sm font-bold">You</p>
+                                    <p class="text-[9px] text-green-400 uppercase font-bold">Online</p>
+                                </div>
                             </div>
-                            <span class="text-sm font-bold text-gray-500">$142.50</span>
+                            <span id="lb-user-balance" class="font-bold text-cyan-400">$0.00</span>
                         </div>
-                        <div class="rank-item flex items-center justify-between p-4 rounded-2xl">
-                            <div class="flex items-center gap-3">
-                                <span class="text-gray-500 font-bold italic">3.</span>
-                                <img src="https://ui-avatars.com/api/?name=Sara+M&background=random" class="w-9 h-9 rounded-full opacity-70">
-                                <p class="text-sm text-gray-300 font-medium">Sara_Elon</p>
+                        <div id="member-list" class="space-y-1">
                             </div>
-                            <span class="text-sm font-bold text-gray-500">$98.00</span>
-                        </div>
-                         <div class="rank-item flex items-center justify-between p-4 rounded-2xl">
-                            <div class="flex items-center gap-3">
-                                <span class="text-gray-500 font-bold italic">4.</span>
-                                <img src="https://ui-avatars.com/api/?name=Bekele+L&background=random" class="w-9 h-9 rounded-full opacity-70">
-                                <p class="text-sm text-gray-300 font-medium">Bekele Legend</p>
-                            </div>
-                            <span class="text-sm font-bold text-gray-500">$56.20</span>
-                        </div>
                     </div>
                 </div>
             </div>
 
             <div id="ads" class="page">
-                <h2 class="text-xl font-bold mb-6 italic">Earn Daily</h2>
+                <h2 class="text-xl font-bold mb-4">Tasks</h2>
                 <div class="glass-card p-5 flex justify-between items-center border-l-4 border-cyan-500 mb-4">
                     <div>
-                        <h4 class="font-bold text-sm">Premium Task</h4>
+                        <h4 class="font-bold text-sm">Watch Video</h4>
                         <p class="text-[10px] text-cyan-400 font-bold">+$0.05 Reward</p>
                     </div>
-                    <button onclick="watchAd()" class="bg-white text-black text-[10px] font-bold px-6 py-2 rounded-full uppercase italic">Play</button>
+                    <button onclick="watchAd()" class="bg-white text-black text-[10px] font-bold px-6 py-2 rounded-full uppercase">Play</button>
                 </div>
             </div>
 
             <div id="invite" class="page">
                 <div class="text-center mt-10">
-                    <div class="w-24 h-24 bg-cyan-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6 rotate-12 border border-cyan-500/20">
-                        <i class="fa-solid fa-user-plus text-4xl text-cyan-400"></i>
+                    <div class="w-20 h-20 bg-cyan-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-cyan-500/20">
+                        <i class="fa-solid fa-users text-3xl text-cyan-400"></i>
                     </div>
                     <h2 class="text-2xl font-bold mb-2 italic">Affeerrii</h2>
-                    <p class="text-sm text-gray-400 mb-8 px-6 italic">Hiriyaa affeertu tokkoof <b>$0.50</b> badhaafami.</p>
-                    <button onclick="shareLink()" class="bg-white text-black w-full py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl">Copy Invite Link</button>
+                    <p class="text-sm text-gray-400 mb-8 italic">Hiriyoota affeeruun kaffaltii kee daballadhu.</p>
+                    <button onclick="shareLink()" class="bg-white text-black w-full py-4 rounded-2xl font-black uppercase">Share Link</button>
                 </div>
             </div>
 
@@ -244,59 +208,101 @@
         <nav class="nav-bar fixed bottom-6 left-6 right-6 h-20 rounded-[30px] flex justify-around items-center px-4 shadow-2xl z-50">
             <button onclick="showSection('home', this)" class="nav-item active flex flex-col items-center">
                 <i class="fa-solid fa-house-chimney text-xl"></i>
-                <span class="text-[8px] font-bold mt-1 uppercase">Home</span>
+                <span class="text-[8px] font-bold mt-1">HOME</span>
             </button>
             <button onclick="showSection('ads', this)" class="nav-item flex flex-col items-center">
                 <i class="fa-solid fa-circle-play text-xl"></i>
-                <span class="text-[8px] font-bold mt-1 uppercase">Earn</span>
+                <span class="text-[8px] font-bold mt-1">EARN</span>
             </button>
             <button onclick="showSection('leaderboard', this)" class="nav-item flex flex-col items-center">
-                <i class="fa-solid fa-ranking-star text-xl"></i>
-                <span class="text-[8px] font-bold mt-1 uppercase">Rank</span>
+                <i class="fa-solid fa-trophy text-xl"></i>
+                <span class="text-[8px] font-bold mt-1">RANK</span>
             </button>
             <button onclick="showSection('wallet', this)" class="nav-item flex flex-col items-center">
                 <i class="fa-solid fa-wallet text-xl"></i>
-                <span class="text-[8px] font-bold mt-1 uppercase">Wallet</span>
+                <span class="text-[8px] font-bold mt-1">WALLET</span>
             </button>
             <button onclick="showSection('invite', this)" class="nav-item flex flex-col items-center">
                 <i class="fa-solid fa-share-nodes text-xl"></i>
-                <span class="text-[8px] font-bold mt-1 uppercase">Invite</span>
+                <span class="text-[8px] font-bold mt-1">INVITE</span>
             </button>
         </nav>
-
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        const RewardAd = window.Adsgram.init({ blockId: "24434" });
-
         let balance = parseFloat(localStorage.getItem('gem_bal')) || 0.00;
-        let wallet = localStorage.getItem('gem_wallet') || "";
+        let walletAddress = localStorage.getItem('gem_wallet') || "";
+
+        // 1. DYNAMIC LEADERBOARD GENERATOR (100 Members)
+        function generateLeaderboard() {
+            const list = document.getElementById('member-list');
+            const names = ["Abbebe", "Chala", "Lensa", "Tolasa", "Biftu", "Mulu", "Kiya", "Obsa", "Hana", "Sola"];
+            let html = "";
+            
+            for (let i = 2; i <= 100; i++) {
+                let randomName = names[Math.floor(Math.random() * names.length)] + "_" + (Math.floor(Math.random() * 900) + 100);
+                let randomBal = (Math.random() * 50 + 5).toFixed(2);
+                html += `
+                    <div class="rank-item flex items-center justify-between p-4 rounded-2xl opacity-70">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-gray-500 w-4">${i}</span>
+                            <img src="https://ui-avatars.com/api/?name=${randomName}&background=random" class="w-8 h-8 rounded-full">
+                            <p class="text-sm font-medium text-gray-300">${randomName}</p>
+                        </div>
+                        <span class="text-sm font-bold text-gray-500">$${randomBal}</span>
+                    </div>`;
+            }
+            list.innerHTML = html;
+        }
+
+        // 2. WALLET CONNECTION LOGIC (Kallattiin Address User-tti)
+        function openTelegramWallet() {
+            tg.HapticFeedback.impactOccurred('heavy');
+            
+            // User-ni address isaa akka connect godhuuf message agarsiisa
+            tg.showConfirm("Gara TON Wallet keetti si geessuufii? Erga address kee mirkaneessitee booda kaffaltiin ni qophaa'a.", (confirmed) => {
+                if(confirmed) {
+                    // Kallattiin link wallet banu (Fkn: Tonkeeper ykn Wallet bot)
+                    tg.openTelegramLink('https://t.me/wallet/start?startapp=connect');
+                    
+                    // Fakkeenyaaf, user-ni yeroo deebi'u address-ni isaa akka dhufe gochuuf:
+                    // (Real world irratti kun API kaffaltiitiin hojjeta, amma demo dha)
+                    setTimeout(() => {
+                        let demoAddr = "UQ" + Math.random().toString(36).substring(2, 15).toUpperCase();
+                        connectSuccess(demoAddr);
+                    }, 3000);
+                }
+            });
+        }
+
+        function connectSuccess(addr) {
+            walletAddress = addr;
+            localStorage.setItem('gem_wallet', addr);
+            updateUI();
+            tg.showPopup({ title: 'Milkaa\'eera!', message: 'Wallet keessan milkiidhaan walitti qabameera.', buttons: [{type: 'ok'}] });
+        }
 
         function updateUI() {
             document.getElementById('user-balance').innerText = balance.toFixed(2);
             document.getElementById('lb-user-balance').innerText = "$" + balance.toFixed(2);
             
-            // Level logic based on balance
-            if(balance > 10) document.getElementById('user-rank-val').innerText = "Silver";
-            if(balance > 50) document.getElementById('user-rank-val').innerText = "Gold";
-
-            if(wallet) {
+            if(walletAddress) {
                 document.getElementById('wallet-status').innerText = "Connected";
                 document.getElementById('wallet-status').classList.replace('text-gray-500', 'text-green-400');
                 document.getElementById('status-dot').classList.replace('bg-gray-500', 'bg-green-500');
-                document.getElementById('wallet-input').value = wallet;
-                document.getElementById('connect-btn').innerText = "CONNECTED ✅";
-                document.getElementById('connect-btn').classList.add('opacity-50');
+                document.getElementById('wallet-input').value = walletAddress;
+                document.getElementById('main-wallet-btn').innerText = "WALLET CONNECTED ✅";
+                document.getElementById('main-wallet-btn').className = "w-full bg-green-600/20 text-green-400 py-4 rounded-2xl text-sm font-bold border border-green-500/30 mb-4";
             }
             localStorage.setItem('gem_bal', balance);
         }
 
-        // Telegram User Init
+        // Init User Data
         const user = tg.initDataUnsafe?.user;
-        const name = user?.first_name || "Guest User";
+        const name = user?.first_name || "Guest";
         const photo = user?.photo_url || `https://ui-avatars.com/api/?name=${name}&background=0088cc&color=fff`;
 
         document.getElementById('user-name').innerText = name;
@@ -304,55 +310,32 @@
         document.getElementById('user-photo').src = photo;
         document.getElementById('lb-user-photo').src = photo;
 
-        updateUI();
-
         function showSection(id, btn) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             if(btn && btn.classList.contains('nav-item')) btn.classList.add('active');
-            tg.HapticFeedback.impactOccurred('medium');
-        }
-
-        // Gara Telegram Wallet Link ni geessa
-        function openTelegramWallet() {
-            tg.HapticFeedback.impactOccurred('heavy');
-            tg.openTelegramLink('https://t.me/wallet');
-            
-            setTimeout(() => {
-                tg.showConfirm("Wallet kee irraa address copy gooteetta? Erga fudhattee booda asitti 'Paste' godhi.");
-            }, 2000);
-        }
-
-        function connectWallet() {
-            const val = document.getElementById('wallet-input').value.trim();
-            if(val.length < 20) {
-                tg.showAlert("Maaloo TON address sirrii galchi!");
-                return;
-            }
-            wallet = val;
-            localStorage.setItem('gem_wallet', wallet);
-            updateUI();
-            tg.HapticFeedback.notificationOccurred('success');
-            tg.showPopup({ 
-                title: 'Milkaa\'eera!', 
-                message: 'Wallet address keessan milkiidhaan walitti qabameera. Amma withdraw gochuu dandeessa.', 
-                buttons: [{type: 'ok'}] 
-            });
+            tg.HapticFeedback.impactOccurred('light');
         }
 
         function watchAd() {
+            // Adsgram trigger
+            const RewardAd = window.Adsgram.init({ blockId: "24434" });
             RewardAd.show().then(() => {
                 balance += 0.05;
                 updateUI();
                 tg.HapticFeedback.notificationOccurred('success');
-            }).catch(() => tg.showAlert("Ad failed to load."));
+            }).catch(() => tg.showAlert("Ad loading failed."));
         }
 
         function shareLink() {
             const link = `https://t.me/Ethio_Coin1_bot/app?start=r${user?.id || '123'}`;
             tg.openTelegramLink(`https://t.me/share/url?url=${link}&text=Maallaqa doolaaraan kaffalu kana irratti na waliin hojjedhu!`);
         }
+
+        // Run On Load
+        generateLeaderboard();
+        updateUI();
     </script>
 </body>
 </html>
