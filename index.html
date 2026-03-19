@@ -95,7 +95,7 @@
 
         <div class="flex justify-between items-center mb-6">
             <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-full border-2 border-cyan-500/50 p-0.5">
+                <div class="w-11 h-11 rounded-full border-2 border-cyan-500/50 p-0.5 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
                     <img id="user-photo" src="" class="rounded-full w-full h-full">
                 </div>
                 <div>
@@ -106,8 +106,8 @@
                     </div>
                 </div>
             </div>
-            <button onclick="showSection('ads', this)" class="glass-card px-4 py-2 flex items-center gap-2 border-yellow-500/30">
-                <i class="fa-solid fa-bolt text-yellow-400 text-xs"></i>
+            <button onclick="boostRank()" class="glass-card px-4 py-2 flex items-center gap-2 border-yellow-500/30 active:scale-95 transition-transform">
+                <i class="fa-solid fa-bolt text-yellow-400 text-xs animate-pulse"></i>
                 <span class="text-[10px] font-bold">BOOST</span>
             </button>
         </div>
@@ -116,13 +116,13 @@
             
             <div id="home" class="page active">
                 <div class="glass-card p-10 text-center mb-6 border-t border-white/10">
-                    <p class="text-gray-400 text-xs mb-3 font-medium uppercase">Current Balance</p>
+                    <p class="text-gray-400 text-[10px] mb-3 font-medium uppercase tracking-widest">Balance</p>
                     <h1 class="text-6xl font-extrabold balance-glow mb-4 italic">
                         $<span id="user-balance">0.00</span>
                     </h1>
                     <div class="flex gap-3 justify-center">
                         <button onclick="showSection('wallet', this)" class="bg-white/10 px-6 py-2 rounded-full text-[10px] font-bold uppercase border border-white/5">Withdraw</button>
-                        <button onclick="showSection('ads', this)" class="bg-gradient-to-r from-blue-600 to-cyan-400 text-black px-6 py-2 rounded-full text-[10px] font-bold uppercase shadow-lg">Earn Now</button>
+                        <button onclick="showSection('ads', this)" class="bg-gradient-to-r from-blue-600 to-cyan-400 text-black px-6 py-2 rounded-full text-[10px] font-bold uppercase shadow-lg shadow-cyan-500/20">Earn Now</button>
                     </div>
                 </div>
 
@@ -130,9 +130,9 @@
                     <div class="glass-card p-5 flex flex-col items-center border-l-2 border-orange-500">
                         <i class="fa-solid fa-crown text-orange-400 mb-2"></i>
                         <p class="text-[10px] text-gray-500 font-bold">LEVEL</p>
-                        <p id="user-rank-val" class="font-bold text-lg">Bronze</p>
+                        <p id="user-rank-val" class="font-bold text-lg text-white">Bronze</p>
                     </div>
-                    <div onclick="showSection('leaderboard', this)" class="glass-card p-5 flex flex-col items-center border-l-2 border-cyan-500 cursor-pointer">
+                    <div onclick="showSection('leaderboard', this)" class="glass-card p-5 flex flex-col items-center border-l-2 border-cyan-500 cursor-pointer active:scale-95">
                         <i class="fa-solid fa-ranking-star text-cyan-400 mb-2"></i>
                         <p class="text-[10px] text-gray-500 font-bold">MY RANK</p>
                         <p id="my-rank-pos" class="font-bold text-lg">#1</p>
@@ -142,12 +142,21 @@
 
             <div id="wallet" class="page">
                 <h2 class="text-xl font-bold mb-4 italic text-cyan-400">TON Wallet</h2>
-                <div class="glass-card p-6 text-center">
-                    <button id="main-wallet-btn" onclick="openTelegramWallet()" class="w-full bg-[#0088cc] py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-3 mb-4">
-                        <i class="fa-solid fa-link"></i>
-                        CONNECT TON WALLET
-                    </button>
-                    <input id="wallet-input" type="text" placeholder="Wallet Address (UQ...)" class="w-full bg-black/30 border border-white/10 p-4 rounded-2xl text-xs focus:outline-none mb-4" readonly>
+                <div class="glass-card p-6">
+                    <div id="wallet-connect-ui">
+                        <p class="text-[11px] text-gray-400 mb-6 text-center italic">Connect your TON wallet to receive instant payments.</p>
+                        <button id="main-wallet-btn" onclick="openTelegramWallet()" class="w-full bg-[#0088cc] py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-3 mb-4 shadow-lg active:scale-95 transition-all">
+                            <i class="fa-solid fa-wallet"></i>
+                            CONNECT TON WALLET
+                        </button>
+                    </div>
+                    <div id="wallet-connected-ui" class="hidden">
+                        <div class="bg-green-500/10 border border-green-500/20 p-4 rounded-2xl mb-4 text-center">
+                            <p class="text-green-400 text-xs font-bold">Wallet Successfully Linked! ✅</p>
+                        </div>
+                        <input id="wallet-input" type="text" class="w-full bg-black/40 border border-white/10 p-4 rounded-2xl text-[10px] font-mono text-cyan-200 mb-4" readonly>
+                        <button onclick="openTelegramWallet()" class="w-full bg-white/5 py-3 rounded-xl text-[10px] font-bold text-gray-400 border border-white/5 uppercase">Change Wallet</button>
+                    </div>
                 </div>
             </div>
 
@@ -161,45 +170,58 @@
             </div>
 
             <div id="ads" class="page">
-                <h2 class="text-xl font-bold mb-4">Daily Tasks</h2>
-                <div class="glass-card p-5 flex justify-between items-center border-l-4 border-cyan-500 mb-4">
-                    <div>
-                        <h4 class="font-bold text-sm">Main Ad Task</h4>
-                        <p class="text-[10px] text-cyan-400 font-bold">+$0.10 Reward</p>
+                <h2 class="text-xl font-bold mb-4 italic">Daily Missions</h2>
+                <div class="space-y-4">
+                    <div class="glass-card p-5 flex justify-between items-center border-l-4 border-cyan-500">
+                        <div>
+                            <h4 class="font-bold text-sm">Reward Ad</h4>
+                            <p class="text-[10px] text-cyan-400 font-bold">+$0.10 Reward</p>
+                        </div>
+                        <button onclick="watchAd()" class="bg-white text-black text-[10px] font-bold px-6 py-2 rounded-full uppercase active:scale-90">Watch</button>
                     </div>
-                    <button onclick="watchAd()" class="bg-white text-black text-[10px] font-bold px-6 py-2 rounded-full uppercase">Play</button>
-                </div>
-                <div class="glass-card p-5 flex justify-between items-center border-l-4 border-yellow-500">
-                    <div>
-                        <h4 class="font-bold text-sm">Special Task</h4>
-                        <p class="text-[10px] text-yellow-400 font-bold">Bonus Ads</p>
+                    <div class="glass-card p-5 flex justify-between items-center border-l-4 border-yellow-500">
+                        <div>
+                            <h4 class="font-bold text-sm">Bonus Task</h4>
+                            <p class="text-[10px] text-yellow-400 font-bold">+$0.05 Reward</p>
+                        </div>
+                        <button onclick="watchTaskAd()" class="bg-yellow-500 text-black text-[10px] font-bold px-6 py-2 rounded-full uppercase active:scale-90">Play</button>
                     </div>
-                    <button onclick="watchTaskAd()" class="bg-yellow-500 text-black text-[10px] font-bold px-6 py-2 rounded-full uppercase">Extra</button>
                 </div>
             </div>
 
             <div id="invite" class="page">
-                <div class="text-center mt-10">
-                    <button onclick="shareLink()" class="bg-white text-black w-full py-4 rounded-2xl font-black uppercase">Copy Invite Link</button>
+                <div class="text-center mt-10 p-6 glass-card">
+                    <div class="w-20 h-20 bg-cyan-500/20 rounded-[30px] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-cyan-500/10">
+                        <i class="fa-solid fa-users-crown text-3xl text-cyan-400"></i>
+                    </div>
+                    <h2 class="text-2xl font-black mb-2 italic">Affeerrii</h2>
+                    <p class="text-xs text-gray-400 mb-8 italic">Hiriyoota affeeruun tokkoon tokkoo isaanii irraa <span class="text-green-400 font-bold">$0.50</span> argadhu.</p>
+                    <button onclick="shareLink()" class="w-full bg-white text-black py-4 rounded-2xl font-black uppercase shadow-lg active:scale-95 transition-all">
+                        <i class="fa-solid fa-share-nodes mr-2"></i> SHARE LINK
+                    </button>
                 </div>
             </div>
 
         </div>
 
-        <nav class="nav-bar fixed bottom-6 left-6 right-6 h-20 rounded-[30px] flex justify-around items-center px-4 shadow-2xl z-50">
-            <button onclick="showSection('home', this)" class="nav-item active flex flex-col items-center">
+        <nav class="nav-bar fixed bottom-6 left-6 right-6 h-20 rounded-[30px] flex justify-around items-center px-2 shadow-2xl z-50">
+            <button onclick="showSection('home', this)" class="nav-item active flex flex-col items-center w-16">
                 <i class="fa-solid fa-house-chimney text-xl"></i>
                 <span class="text-[8px] font-bold mt-1">HOME</span>
             </button>
-            <button onclick="showSection('ads', this)" class="nav-item flex flex-col items-center">
+            <button onclick="showSection('ads', this)" class="nav-item flex flex-col items-center w-16">
                 <i class="fa-solid fa-circle-play text-xl"></i>
                 <span class="text-[8px] font-bold mt-1">EARN</span>
             </button>
-            <button onclick="showSection('leaderboard', this)" class="nav-item flex flex-col items-center">
+            <button onclick="showSection('invite', this)" class="nav-item flex flex-col items-center w-16">
+                <i class="fa-solid fa-user-plus text-xl"></i>
+                <span class="text-[8px] font-bold mt-1">INVITE</span>
+            </button>
+            <button onclick="showSection('leaderboard', this)" class="nav-item flex flex-col items-center w-16">
                 <i class="fa-solid fa-trophy text-xl"></i>
                 <span class="text-[8px] font-bold mt-1">RANK</span>
             </button>
-            <button onclick="showSection('wallet', this)" class="nav-item flex flex-col items-center">
+            <button onclick="showSection('wallet', this)" class="nav-item flex flex-col items-center w-16">
                 <i class="fa-solid fa-wallet text-xl"></i>
                 <span class="text-[8px] font-bold mt-1">WALLET</span>
             </button>
@@ -209,8 +231,9 @@
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        tg.enableClosingConfirmation();
 
-        // BLOCK IDs KEESSAN
+        // AD IDs
         const REWARD_ID = "25444";
         const INTERSTITIAL_ID = "25445";
         const TASK_ID = "25446";
@@ -224,13 +247,74 @@
 
         function updateUI() {
             document.getElementById('user-balance').innerText = balance.toFixed(2);
+            
             if(walletAddress) {
                 document.getElementById('wallet-status').innerText = "Connected";
                 document.getElementById('wallet-status').classList.replace('text-gray-500', 'text-green-400');
                 document.getElementById('status-dot').classList.replace('bg-gray-500', 'bg-green-500');
                 document.getElementById('wallet-input').value = walletAddress;
+                document.getElementById('wallet-connect-ui').classList.add('hidden');
+                document.getElementById('wallet-connected-ui').classList.remove('hidden');
+            } else {
+                document.getElementById('wallet-connect-ui').classList.remove('hidden');
+                document.getElementById('wallet-connected-ui').classList.add('hidden');
             }
+            
+            // Level Logic
+            let rank = "Bronze";
+            if(balance > 10) rank = "Silver";
+            if(balance > 50) rank = "Gold";
+            if(balance > 200) rank = "Diamond";
+            document.getElementById('user-rank-val').innerText = rank;
+
             localStorage.setItem('gem_bal', balance);
+        }
+
+        // --- WALLET CONNECTION ---
+        function openTelegramWallet() {
+            tg.HapticFeedback.impactOccurred('medium');
+            
+            tg.showConfirm("Gara TON Wallet keetti si geessuun address kee connect gochuu barbaadda?", (confirmed) => {
+                if(confirmed) {
+                    // Telegram Wallet Link (kallattiin gara wallet bot ykn app)
+                    tg.openTelegramLink('https://t.me/wallet/start?startapp=connect');
+                    
+                    // Demo Connection (Erga inni achii deebi'ee booda akka connected ta'e gochuuf)
+                    tg.showPopup({
+                        title: 'Connecting...',
+                        message: 'Wallet address kee simachaa jirra...',
+                        buttons: [{type: 'destructive', text: 'Wait'}]
+                    });
+
+                    setTimeout(() => {
+                        let randomAddr = "UQ" + Math.random().toString(36).substring(2, 12).toUpperCase() + "..." + Math.random().toString(36).substring(2, 6).toUpperCase();
+                        walletAddress = randomAddr;
+                        localStorage.setItem('gem_wallet', randomAddr);
+                        updateUI();
+                        tg.HapticFeedback.notificationOccurred('success');
+                    }, 3000);
+                }
+            });
+        }
+
+        // --- INVITE SYSTEM ---
+        function shareLink() {
+            const userId = tg.initDataUnsafe?.user?.id || "12345";
+            const link = `https://t.me/Ethio_Coin1_bot/app?start=r${userId}`;
+            const text = "Kottu maallaqa doolaaraan kaffalu kana waliin hojjennaa! 💰";
+            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`);
+            tg.HapticFeedback.impactOccurred('heavy');
+        }
+
+        // --- BOOST RANK ---
+        function boostRank() {
+            InterstitialAd.show().then(() => {
+                tg.showAlert("Boost Successful! Rank kee ol deebi'uuf qophaa'eera.");
+                balance += 0.01;
+                updateUI();
+            }).catch(() => {
+                tg.showAlert("Boost gochuuf Ad ilaaluu qabda.");
+            });
         }
 
         // --- ADS FUNCTIONS ---
@@ -238,28 +322,27 @@
             AdController.show().then(() => {
                 balance += 0.10;
                 updateUI();
-                tg.showAlert("Milkaa'eera! $0.10 dabalameera.");
-            }).catch(() => tg.showAlert("Ad hin jiru, daqiiqaa muraasa booda yaali."));
+                tg.HapticFeedback.notificationOccurred('success');
+            }).catch(() => tg.showAlert("Ad Loading Failed."));
         }
 
         function watchTaskAd() {
             TaskAd.show().then(() => {
                 balance += 0.05;
                 updateUI();
-                tg.showAlert("Bonus: $0.05 dabalameera.");
-            }).catch(() => tg.showAlert("Task Ad ammaaf hin jiru."));
+            }).catch(() => tg.showAlert("Task not available."));
         }
 
         function showSection(id, btn) {
-            // Yeroo section jijjiiru Interstitial Ad (25445) agarsiisuu danda'a
-            if(Math.random() > 0.7) { // 30% chance akka user hin nuffineef
-                InterstitialAd.show().catch(() => {});
-            }
-
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            if(btn) btn.classList.add('active');
+            
+            // Set active class on nav
+            if(btn && btn.classList.contains('nav-item')) {
+                btn.classList.add('active');
+            }
+            
             tg.HapticFeedback.impactOccurred('light');
         }
 
@@ -271,30 +354,19 @@
                 let name = names[i % 10] + "_" + (100 + i);
                 html += `<div class="rank-item flex items-center justify-between p-4 rounded-2xl opacity-80">
                             <div class="flex items-center gap-3">
-                                <span class="text-xs font-bold text-gray-500">${i}</span>
-                                <p class="text-sm font-medium">${name}</p>
+                                <span class="text-xs font-bold ${i < 4 ? 'text-yellow-400' : 'text-gray-500'}">${i}</span>
+                                <p class="text-sm font-medium text-gray-200">${name}</p>
                             </div>
-                            <span class="text-sm font-bold">$${(Math.random()*100).toFixed(2)}</span>
+                            <span class="text-sm font-bold text-cyan-400">$${(Math.random()*100).toFixed(2)}</span>
                          </div>`;
             }
             list.innerHTML = html;
         }
 
-        function openTelegramWallet() {
-            tg.showConfirm("Wallet kee connect gochuu barbaadda?", (ok) => {
-                if(ok) {
-                    let demoAddr = "UQ" + Math.random().toString(36).substring(2, 10).toUpperCase();
-                    walletAddress = demoAddr;
-                    localStorage.setItem('gem_wallet', demoAddr);
-                    updateUI();
-                }
-            });
-        }
-
-        // Init
+        // Initial Data
         const user = tg.initDataUnsafe?.user;
-        document.getElementById('user-name').innerText = user?.first_name || "User";
-        document.getElementById('user-photo').src = user?.photo_url || `https://ui-avatars.com/api/?name=${user?.first_name || 'U'}`;
+        document.getElementById('user-name').innerText = user?.first_name || "Guest User";
+        document.getElementById('user-photo').src = user?.photo_url || `https://ui-avatars.com/api/?name=${user?.first_name || 'U'}&background=0088cc&color=fff`;
         
         generateLeaderboard();
         updateUI();
