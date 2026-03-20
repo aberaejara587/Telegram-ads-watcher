@@ -229,14 +229,12 @@
         tg.enableClosingConfirmation();
 
         // --- ADSGRAM CONFIGURATION (SIRREEFFAMEERA) ---
-        // 1. Reward fi Interstitial beeksisa idileedha.
-        // Hubadhu: Interstitial ta'uun isaa prefix 'int-' akka barbaadu screenshot kee irraa mul'ata.
+        // 1. Reward ID (Prefix hin barbaadu)
         const REWARD_ID = "25444"; 
+        // 2. Interstitial ID (Prefix 'int-' barbaada)
         const INTERSTITIAL_ID = "int-25445"; 
-        
-        // 2. Dashboard irratti "Reward" uumtee koodii keessatti akka "Task" waamuuf yaalte.
-        // Dogoggora hambisuuf 'task-' irraa haqameera (ykn Dashboard irratti 'Task' gootee uumi).
-        const TASK_ID = "25446"; 
+        // 3. Task ID (Prefix 'task-' barbaada)
+        const TASK_ID = "task-25446"; 
 
         const AdController = window.Adsgram.init({ blockId: REWARD_ID });
         const InterstitialAd = window.Adsgram.init({ blockId: INTERSTITIAL_ID });
@@ -274,7 +272,7 @@
                 updateUI();
                 tg.HapticFeedback.notificationOccurred('success');
             }).catch((err) => {
-                tg.showAlert("Ad Loading Failed: " + (err.description || "Try again later."));
+                tg.showAlert("Reward Ad Error: Dashboard irratti Block ID 25444 'Reward' ta'uu mirkaneessi.");
             });
         }
 
@@ -284,7 +282,7 @@
                 updateUI();
                 tg.HapticFeedback.notificationOccurred('success');
             }).catch((err) => {
-                tg.showAlert("Task Error: ID 25446 is not set as 'Task' in Dashboard. Try removing 'task-' from ID if it persists.");
+                tg.showAlert("Task Error: Dashboard irratti Block ID 25446 'Task' ta'uu mirkaneessi.");
             });
         }
 
@@ -293,7 +291,9 @@
                 balance += 0.01;
                 updateUI();
                 tg.showAlert("Boost Successful!");
-            }).catch((err) => tg.showAlert("Boost Failed: Use 'int-25445' if this ID is Interstitial."));
+            }).catch((err) => {
+                tg.showAlert("Interstitial Error: Dashboard irratti Block ID 25445 'Interstitial' ta'uu mirkaneessi.");
+            });
         }
 
         function openTelegramWallet() {
