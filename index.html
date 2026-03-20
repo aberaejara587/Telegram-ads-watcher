@@ -229,12 +229,18 @@
         tg.enableClosingConfirmation();
 
         // --- ADSGRAM CONFIGURATION (SIRREEFFAMEERA) ---
-const REWARD_ID = "25444"; 
-const INTERSTITIAL_ID = "25445"; 
-const TASK_ID = "25446"; // ✅ FIXED
-const AdController = window.Adsgram.init({ blockId: REWARD_ID });
-const InterstitialAd = window.Adsgram.init({ blockId: INTERSTITIAL_ID });
-const TaskAd = window.Adsgram.init({ blockId: TASK_ID });
+        // 1. Reward fi Interstitial beeksisa idileedha (task- hin barbaadan)
+        const REWARD_ID = "25444"; 
+        const INTERSTITIAL_ID = "25445"; 
+        
+        // 2. Task ID kanaan uumame 'task-' jalqabuu qaba. 
+        // Hubachiisa: Adsgram Dashboard irratti Block ID 25446 kana akka "Task" filachuu kee mirkaneeffadhu.
+        const TASK_ID = "task-25446"; 
+
+        const AdController = window.Adsgram.init({ blockId: REWARD_ID });
+        const InterstitialAd = window.Adsgram.init({ blockId: INTERSTITIAL_ID });
+        const TaskAd = window.Adsgram.init({ blockId: TASK_ID });
+
         // --- STATE MANAGEMENT ---
         let balance = parseFloat(localStorage.getItem('gem_bal')) || 0.00;
         let walletAddress = localStorage.getItem('gem_wallet') || "";
@@ -266,7 +272,10 @@ const TaskAd = window.Adsgram.init({ blockId: TASK_ID });
                 balance += 0.10;
                 updateUI();
                 tg.HapticFeedback.notificationOccurred('success');
-            }).catch(() => tg.showAlert("Ad Loading Failed. Try again later."));
+            }).catch((err) => {
+                console.error(err);
+                tg.showAlert("Ad Loading Failed. Try again later.");
+            });
         }
 
         function watchTaskAd() {
@@ -274,14 +283,18 @@ const TaskAd = window.Adsgram.init({ blockId: TASK_ID });
                 balance += 0.05;
                 updateUI();
                 tg.HapticFeedback.notificationOccurred('success');
-            }).catch(() => tg.showAlert("Task Ad Loading Failed."));
+            }).catch((err) => {
+                console.error(err);
+                // Yoo ammas error sitti fide, Block ID kee Dashboard irratti "Task" ta'uu isaa mirkaneeffadhu.
+                tg.showAlert("Task Ad Error: Check if Block ID is set to 'Task' type in Adsgram.");
+            });
         }
 
         function boostRank() {
             InterstitialAd.show().then(() => {
                 balance += 0.01;
                 updateUI();
-                tg.showAlert("Boost Successful! Rank kee ol deebi'uuf qophaa'eera.");
+                tg.showAlert("Boost Successful!");
             }).catch(() => tg.showAlert("Ad Loading Failed."));
         }
 
