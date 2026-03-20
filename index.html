@@ -229,13 +229,14 @@
         tg.enableClosingConfirmation();
 
         // --- ADSGRAM CONFIGURATION (SIRREEFFAMEERA) ---
-        // 1. Reward fi Interstitial beeksisa idileedha (task- hin barbaadan)
+        // 1. Reward fi Interstitial beeksisa idileedha.
+        // Hubadhu: Interstitial ta'uun isaa prefix 'int-' akka barbaadu screenshot kee irraa mul'ata.
         const REWARD_ID = "25444"; 
-        const INTERSTITIAL_ID = "25445"; 
+        const INTERSTITIAL_ID = "int-25445"; 
         
-        // 2. Task ID kanaan uumame 'task-' jalqabuu qaba. 
-        // Hubachiisa: Adsgram Dashboard irratti Block ID 25446 kana akka "Task" filachuu kee mirkaneeffadhu.
-        const TASK_ID = "task-25446"; 
+        // 2. Dashboard irratti "Reward" uumtee koodii keessatti akka "Task" waamuuf yaalte.
+        // Dogoggora hambisuuf 'task-' irraa haqameera (ykn Dashboard irratti 'Task' gootee uumi).
+        const TASK_ID = "25446"; 
 
         const AdController = window.Adsgram.init({ blockId: REWARD_ID });
         const InterstitialAd = window.Adsgram.init({ blockId: INTERSTITIAL_ID });
@@ -273,8 +274,7 @@
                 updateUI();
                 tg.HapticFeedback.notificationOccurred('success');
             }).catch((err) => {
-                console.error(err);
-                tg.showAlert("Ad Loading Failed. Try again later.");
+                tg.showAlert("Ad Loading Failed: " + (err.description || "Try again later."));
             });
         }
 
@@ -284,9 +284,7 @@
                 updateUI();
                 tg.HapticFeedback.notificationOccurred('success');
             }).catch((err) => {
-                console.error(err);
-                // Yoo ammas error sitti fide, Block ID kee Dashboard irratti "Task" ta'uu isaa mirkaneeffadhu.
-                tg.showAlert("Task Ad Error: Check if Block ID is set to 'Task' type in Adsgram.");
+                tg.showAlert("Task Error: ID 25446 is not set as 'Task' in Dashboard. Try removing 'task-' from ID if it persists.");
             });
         }
 
@@ -295,7 +293,7 @@
                 balance += 0.01;
                 updateUI();
                 tg.showAlert("Boost Successful!");
-            }).catch(() => tg.showAlert("Ad Loading Failed."));
+            }).catch((err) => tg.showAlert("Boost Failed: Use 'int-25445' if this ID is Interstitial."));
         }
 
         function openTelegramWallet() {
