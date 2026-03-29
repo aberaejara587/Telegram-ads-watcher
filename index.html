@@ -232,7 +232,7 @@
         // HUBADHU: ID'n kunniin Dashboard kee irratti Type uumte wajjin wal simuu qabu!
         const REWARD_ID = "25444";         // Dashboard: Reward Ad
         const INTERSTITIAL_ID = "int-25445"; // Dashboard: Interstitial Ad (int- prefix barbaachisaadha)
-        const TASK_ID = "task-25446";       // Dashboard: Task Ad (task- prefix barbaachisaadha)
+        const TASK_ID = "25446";            // ✅ FIXED: 'task-' prefix is not allowed. Use plain number.
 
         const AdController = window.Adsgram.init({ blockId: REWARD_ID });
         const InterstitialAd = window.Adsgram.init({ blockId: INTERSTITIAL_ID });
