@@ -1,166 +1,337 @@
-<html lang="om">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gemini Premium App</title>
+<html lang="om">    
+<head>    
+    <meta charset="UTF-8">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <title>Gemini Premium App</title>    
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>    
+    <script src="https://cdn.tailwindcss.com"></script>    
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">    
+    <style>    
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');  :root {    
+        --primary: #0088cc;    
+        --secondary: #00ffcc;    
+        --bg-dark: #050a14;    
+        --card-bg: rgba(255, 255, 255, 0.03);    
+    }    body {    
+    background-color: var(--bg-dark);    
+    color: white;    
+    font-family: 'Poppins', sans-serif;    
+    margin: 0;    
+    padding: 0;    
+    overflow: hidden;    
+    user-select: none;    
+}    
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+.bg-glow {    
+    position: fixed;    
+    top: 50%;    
+    left: 50%;    
+    transform: translate(-50%, -50%);    
+    width: 150%;    
+    height: 150%;    
+    background: radial-gradient(circle, rgba(0, 136, 204, 0.15) 0%, transparent 70%);    
+    z-index: -1;    
+}    
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
+.glass-card {    
+    background: var(--card-bg);    
+    backdrop-filter: blur(25px);    
+    border: 1px solid rgba(255, 255, 255, 0.08);    
+    border-radius: 28px;    
+}    
 
-:root {
---primary:#0088cc;
---secondary:#00ffcc;
---bg-dark:#050a14;
---card-bg:rgba(255,255,255,0.03);
-}
+.nav-bar {    
+    background: rgba(10, 15, 28, 0.9);    
+    backdrop-filter: blur(20px);    
+    border-top: 1px solid rgba(255, 255, 255, 0.05);    
+}    
 
-body{
-background:var(--bg-dark);
-color:white;
-font-family:Poppins;
-margin:0;
-overflow:hidden;
-}
+.nav-item {    
+    color: #64748b;    
+    transition: all 0.3s ease;    
+}    
 
-.page{display:none;}
-.page.active{display:block;}
+.nav-item.active {    
+    color: var(--secondary);    
+    text-shadow: 0 0 15px rgba(0, 255, 204, 0.6);    
+}    
 
-.nav-item{color:#64748b;}
-.nav-item.active{color:#00ffcc;}
+.page {    
+    display: none;    
+    animation: fadeIn 0.4s ease-out;    
+}    
 
-.glass-card{
-background:var(--card-bg);
-border-radius:20px;
-}
-</style>
-</head>
+.page.active { display: block; }    
 
-<body>
+@keyframes fadeIn {    
+    from { opacity: 0; transform: scale(0.98); }    
+    to { opacity: 1; transform: scale(1); }    
+}    
 
-<div class="p-6">
+.balance-glow {    
+    text-shadow: 0 0 20px rgba(0, 255, 204, 0.4);    
+}    
 
-<h2 id="user-name">User</h2>
-<h1>$<span id="user-balance">0.00</span></h1>
-<p>Rank: <span id="user-rank-val">Bronze</span></p>
-<p>My Rank: <span id="my-rank-pos">#-</span></p>
+#leaderboard-scroll::-webkit-scrollbar { width: 4px; }    
+#leaderboard-scroll::-webkit-scrollbar-thumb { background: rgba(0, 255, 204, 0.2); border-radius: 10px; }
 
-<button onclick="watchAd()">+0.10</button>
-<button onclick="boostRank()">Boost</button>
+</style>  </head>    
+<body>  <div class="bg-glow"></div>    <div class="p-6 h-screen flex flex-col">    <div class="flex justify-between items-center mb-6">    
+    <div class="flex items-center gap-3">    
+        <div class="w-11 h-11 rounded-full border-2 border-cyan-500/50 p-0.5 shadow-[0_0_15px_rgba(6,182,212,0.3)]">    
+            <img id="user-photo" src="" class="rounded-full w-full h-full">    
+        </div>    
+        <div>    
+            <h2 id="user-name" class="font-bold text-sm italic">User</h2>    
+            <div class="flex items-center gap-1">    
+                <div id="status-dot" class="w-1.5 h-1.5 rounded-full bg-gray-500"></div>    
+                <p id="wallet-status" class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Disconnected</p>    
+            </div>    
+        </div>    
+    </div>    
+    <button onclick="boostRank()" class="glass-card px-4 py-2 flex items-center gap-2 border-yellow-500/30 active:scale-95 transition-transform">    
+        <i class="fa-solid fa-bolt text-yellow-400 text-xs animate-pulse"></i>    
+        <span class="text-[10px] font-bold">BOOST</span>    
+    </button>    
+</div>    
 
-<div id="member-list"></div>
+<div id="content-area" class="flex-1 overflow-y-auto pb-32">    
+        
+    <div id="home" class="page active">    
+        <div class="glass-card p-10 text-center mb-6 border-t border-white/10">    
+            <p class="text-gray-400 text-[10px] mb-3 font-medium uppercase tracking-widest">Balance</p>    
+            <h1 class="text-6xl font-extrabold balance-glow mb-4 italic">    
+                $<span id="user-balance">0.00</span>    
+            </h1>    
+            <div class="flex gap-3 justify-center">    
+                <button onclick="showSection('wallet', this)" class="bg-white/10 px-6 py-2 rounded-full text-[10px] font-bold uppercase border border-white/5">Withdraw</button>    
+                <button onclick="showSection('ads', this)" class="bg-gradient-to-r from-blue-600 to-cyan-400 text-black px-6 py-2 rounded-full text-[10px] font-bold uppercase shadow-lg shadow-cyan-500/20">Earn Now</button>    
+            </div>    
+        </div>    
 
-</div>
+        <div class="grid grid-cols-2 gap-4">    
+            <div class="glass-card p-5 flex flex-col items-center border-l-2 border-orange-500">    
+                <i class="fa-solid fa-crown text-orange-400 mb-2"></i>    
+                <p class="text-[10px] text-gray-500 font-bold">LEVEL</p>    
+                <p id="user-rank-val" class="font-bold text-lg text-white">Bronze</p>    
+            </div>    
+            <div onclick="showSection('leaderboard', this)" class="glass-card p-5 flex flex-col items-center border-l-2 border-cyan-500 cursor-pointer active:scale-95">    
+                <i class="fa-solid fa-ranking-star text-cyan-400 mb-2"></i>    
+                <p class="text-[10px] text-gray-500 font-bold">MY RANK</p>    
+                <p id="my-rank-pos" class="font-bold text-lg">#1</p>    
+            </div>    
+        </div>    
+    </div>    
 
-<script>
-let tg = window.Telegram.WebApp;
-tg.expand();
+    <div id="wallet" class="page">    
+        <h2 class="text-xl font-bold mb-4 italic text-cyan-400">TON Wallet</h2>    
+        <div class="glass-card p-6">    
+            <div id="wallet-connect-ui">    
+                <p class="text-[11px] text-gray-400 mb-6 text-center italic">Connect your TON wallet to receive instant payments.</p>    
+                <button id="main-wallet-btn" onclick="openTelegramWallet()" class="w-full bg-[#0088cc] py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-3 mb-4 shadow-lg active:scale-95 transition-all">    
+                    <i class="fa-solid fa-wallet"></i>    
+                    CONNECT TON WALLET    
+                </button>    
+            </div>    
+            <div id="wallet-connected-ui" class="hidden">    
+                <div class="bg-green-500/10 border border-green-500/20 p-4 rounded-2xl mb-4 text-center">    
+                    <p class="text-green-400 text-xs font-bold">Wallet Successfully Linked! ✅</p>    
+                </div>    
+                <input id="wallet-input" type="text" class="w-full bg-black/40 border border-white/10 p-4 rounded-2xl text-[10px] font-mono text-cyan-200 mb-4" readonly>    
+                <button onclick="openTelegramWallet()" class="w-full bg-white/5 py-3 rounded-xl text-[10px] font-bold text-gray-400 border border-white/5 uppercase">Change Wallet</button>    
+            </div>    
+        </div>    
+    </div>    
 
-// --- STATE ---
-let balance = parseFloat(localStorage.getItem('gem_bal')) || 0;
-let walletAddress = localStorage.getItem('gem_wallet') || "";
-let allUsers = JSON.parse(localStorage.getItem('gem_users')) || [];
+    <div id="leaderboard" class="page">    
+        <h2 class="text-xl font-bold mb-4 text-center italic">Top 100 Champions</h2>    
+        <div class="glass-card p-2">    
+            <div id="leaderboard-scroll" class="max-h-[60vh] overflow-y-auto">    
+                <div id="member-list" class="space-y-1"></div>    
+            </div>    
+        </div>    
+    </div>    
 
-// --- INIT USER ---
-function initUser(){
-    const user = tg.initDataUnsafe?.user;
+    <div id="ads" class="page">    
+        <h2 class="text-xl font-bold mb-4 italic">Daily Missions</h2>    
+        <div class="space-y-4">    
+            <div class="glass-card p-5 flex justify-between items-center border-l-4 border-cyan-500">    
+                <div>    
+                    <h4 class="font-bold text-sm">Reward Ad</h4>    
+                    <p class="text-[10px] text-cyan-400 font-bold">+$0.10 Reward</p>    
+                </div>    
+                <button onclick="watchAd()" class="bg-white text-black text-[10px] font-bold px-6 py-2 rounded-full uppercase active:scale-90">Watch</button>    
+            </div>    
+            <div class="glass-card p-5 flex justify-between items-center border-l-4 border-yellow-500">    
+                <div>    
+                    <h4 class="font-bold text-sm">Bonus Task</h4>    
+                    <p class="text-[10px] text-yellow-400 font-bold">+$0.05 Reward</p>    
+                </div>    
+                <button onclick="watchTaskAd()" class="bg-yellow-500 text-black text-[10px] font-bold px-6 py-2 rounded-full uppercase active:scale-90">Play</button>    
+            </div>    
+        </div>    
+    </div>    
 
-    const currentUser = {
-        id: user?.id || "guest_"+Math.random(),
-        name: user?.first_name || "Guest",
-        balance: balance
-    };
+    <div id="invite" class="page">    
+        <div class="text-center mt-10 p-6 glass-card">    
+            <div class="w-20 h-20 bg-cyan-500/20 rounded-[30px] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-cyan-500/10">    
+                <i class="fa-solid fa-users-crown text-3xl text-cyan-400"></i>    
+            </div>    
+            <h2 class="text-2xl font-black mb-2 italic">Affeerrii</h2>    
+            <p class="text-xs text-gray-400 mb-8 italic">Hiriyoota affeeruun tokkoon tokkoo isaanii irraa <span class="text-green-400 font-bold">$0.50</span> argadhu.</p>    
+            <button onclick="shareLink()" class="w-full bg-white text-black py-4 rounded-2xl font-black uppercase shadow-lg active:scale-95 transition-all">    
+                <i class="fa-solid fa-share-nodes mr-2"></i> SHARE LINK    
+            </button>    
+        </div>    
+    </div>    
 
-    let exists = allUsers.find(u=>u.id===currentUser.id);
+</div>    
 
-    if(!exists){
-        allUsers.push(currentUser);
-    }
+<nav class="nav-bar fixed bottom-6 left-6 right-6 h-20 rounded-[30px] flex justify-around items-center px-2 shadow-2xl z-50">    
+    <button onclick="showSection('home', this)" class="nav-item active flex flex-col items-center w-16">    
+        <i class="fa-solid fa-house-chimney text-xl"></i>    
+        <span class="text-[8px] font-bold mt-1">HOME</span>    
+    </button>    
+    <button onclick="showSection('ads', this)" class="nav-item flex flex-col items-center w-16">    
+        <i class="fa-solid fa-circle-play text-xl"></i>    
+        <span class="text-[8px] font-bold mt-1">EARN</span>    
+    </button>    
+    <button onclick="showSection('invite', this)" class="nav-item flex flex-col items-center w-16">    
+        <i class="fa-solid fa-user-plus text-xl"></i>    
+        <span class="text-[8px] font-bold mt-1">INVITE</span>    
+    </button>    
+    <button onclick="showSection('leaderboard', this)" class="nav-item flex flex-col items-center w-16">    
+        <i class="fa-solid fa-trophy text-xl"></i>    
+        <span class="text-[8px] font-bold mt-1">RANK</span>    
+    </button>    
+    <button onclick="showSection('wallet', this)" class="nav-item flex flex-col items-center w-16">    
+        <i class="fa-solid fa-wallet text-xl"></i>    
+        <span class="text-[8px] font-bold mt-1">WALLET</span>    
+    </button>    
+</nav>
 
-    localStorage.setItem('gem_users',JSON.stringify(allUsers));
-}
-
-// --- SYNC USER ---
-function syncUserBalance(){
-    const user = tg.initDataUnsafe?.user;
-
-    allUsers = allUsers.map(u=>{
-        if(u.id===user?.id){
-            return {...u,balance:balance};
-        }
-        return u;
-    });
-
-    localStorage.setItem('gem_users',JSON.stringify(allUsers));
-}
-
-// --- UPDATE UI ---
-function updateUI(){
-    document.getElementById('user-balance').innerText = balance.toFixed(2);
-
-    let rank="Bronze";
-    if(balance>10) rank="Silver";
-    if(balance>50) rank="Gold";
-    if(balance>200) rank="Diamond";
-
-    document.getElementById('user-rank-val').innerText = rank;
-
-    localStorage.setItem('gem_bal',balance);
-
-    syncUserBalance();
-    generateLeaderboard();
-}
-
-// --- LEADERBOARD ---
-function generateLeaderboard(){
-    const list = document.getElementById('member-list');
-
-    const sorted = allUsers.sort((a,b)=>b.balance-a.balance);
-
-    let html="";
-
-    sorted.forEach((u,i)=>{
-        html+=`
-        <div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #333;">
-            <span>#${i+1} ${u.name}</span>
-            <span>$${u.balance.toFixed(2)}</span>
-        </div>`;
-    });
-
-    list.innerHTML = html;
-
-    const user = tg.initDataUnsafe?.user;
-    const myIndex = sorted.findIndex(u=>u.id===user?.id);
-
-    document.getElementById('my-rank-pos').innerText =
-        myIndex>=0 ? "#"+(myIndex+1) : "#-";
-}
-
-// --- ACTIONS ---
-function watchAd(){
-    balance += 0.10;
-    updateUI();
-}
-
-function boostRank(){
-    balance += 0.01;
-    updateUI();
-}
-
-// --- USER INFO ---
-const user = tg.initDataUnsafe?.user;
-document.getElementById('user-name').innerText =
-    user?.first_name || "Guest";
-
-// --- START ---
-initUser();
-updateUI();
-
-</script>
-
-</body>
+</div>    <script>    
+    let tg = window.Telegram.WebApp;    
+    tg.expand();    
+    tg.enableClosingConfirmation();    
+  
+    // --- ADSGRAM CONFIGURATION ---    
+    // HUBADHU: ID'n kunniin Dashboard kee irratti Type uumte wajjin wal simuu qabu!    
+    const REWARD_ID = "25444";         // Dashboard: Reward Ad    
+    const INTERSTITIAL_ID = "int-25445"; // Dashboard: Interstitial Ad (int- prefix barbaachisaadha)    
+    const TASK_ID = "25446";            // ✅ FIXED: 'task-' prefix is not allowed. Use plain number.    
+  
+    const AdController = window.Adsgram.init({ blockId: REWARD_ID });    
+    const InterstitialAd = window.Adsgram.init({ blockId: INTERSTITIAL_ID });    
+    const TaskAd = window.Adsgram.init({ blockId: TASK_ID });    
+  
+    // --- STATE MANAGEMENT ---    
+    let balance = parseFloat(localStorage.getItem('gem_bal')) || 0.00;    
+    let walletAddress = localStorage.getItem('gem_wallet') || "";    
+  
+    function updateUI() {    
+        document.getElementById('user-balance').innerText = balance.toFixed(2);    
+            
+        if(walletAddress) {    
+            document.getElementById('wallet-status').innerText = "Connected";    
+            document.getElementById('wallet-status').classList.replace('text-gray-500', 'text-green-400');    
+            document.getElementById('status-dot').classList.replace('bg-gray-500', 'bg-green-500');    
+            document.getElementById('wallet-input').value = walletAddress;    
+            document.getElementById('wallet-connect-ui').classList.add('hidden');    
+            document.getElementById('wallet-connected-ui').classList.remove('hidden');    
+        }    
+            
+        let rank = "Bronze";    
+        if(balance > 10) rank = "Silver";    
+        if(balance > 50) rank = "Gold";    
+        if(balance > 200) rank = "Diamond";    
+        document.getElementById('user-rank-val').innerText = rank;    
+  
+        localStorage.setItem('gem_bal', balance);    
+    }    
+  
+    // --- ACTIONS ---    
+    function watchAd() {    
+        AdController.show().then(() => {    
+            balance += 0.10;    
+            updateUI();    
+            tg.HapticFeedback.notificationOccurred('success');    
+        }).catch((err) => {    
+            tg.showAlert("Reward Ad Error: Dashboard irratti Block ID 25444 'Reward' ta'uu mirkaneessi.");    
+        });    
+    }    
+  
+    function watchTaskAd() {    
+        TaskAd.show().then(() => {    
+            balance += 0.05;    
+            updateUI();    
+            tg.HapticFeedback.notificationOccurred('success');    
+        }).catch((err) => {    
+            tg.showAlert("Task Error: Dashboard irratti Block ID 25446 'Task' ta'uu mirkaneessi.");    
+        });    
+    }    
+  
+    function boostRank() {    
+        InterstitialAd.show().then(() => {    
+            balance += 0.01;    
+            updateUI();    
+            tg.showAlert("Boost Successful!");    
+        }).catch((err) => {    
+            tg.showAlert("Interstitial Error: Dashboard irratti Block ID 25445 'Interstitial' ta'uu mirkaneessi.");    
+        });    
+    }    
+  
+    function openTelegramWallet() {    
+        tg.HapticFeedback.impactOccurred('medium');    
+        tg.showConfirm("Connect your TON Wallet?", (confirmed) => {    
+            if(confirmed) {    
+                setTimeout(() => {    
+                    let randomAddr = "UQ" + Math.random().toString(36).substring(2, 10).toUpperCase() + "...TON";    
+                    walletAddress = randomAddr;    
+                    localStorage.setItem('gem_wallet', randomAddr);    
+                    updateUI();    
+                    tg.HapticFeedback.notificationOccurred('success');    
+                }, 2000);    
+            }    
+        });    
+    }    
+  
+    function shareLink() {    
+        const userId = tg.initDataUnsafe?.user?.id || "000";    
+        const link = `https://t.me/Ethio_Coin1_bot/app?start=r${userId}`;    
+        tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Join me and earn!`);    
+    }    
+  
+    function showSection(id, btn) {    
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));    
+        document.getElementById(id).classList.add('active');    
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));    
+        if(btn && btn.classList.contains('nav-item')) btn.classList.add('active');    
+        tg.HapticFeedback.impactOccurred('light');    
+    }    
+  
+    function generateLeaderboard() {    
+        const list = document.getElementById('member-list');    
+        const names = ["Abbebe", "Chala", "Lensa", "Tolasa", "Biftu", "Mulu", "Kiya", "Obsa", "Hana", "Sola"];    
+        let html = "";    
+        for (let i = 1; i <= 20; i++) {    
+            html += `<div class="rank-item flex items-center justify-between p-4 rounded-2xl opacity-80 border-b border-white/5">    
+                        <div class="flex items-center gap-3">    
+                            <span class="text-xs font-bold ${i < 4 ? 'text-yellow-400' : 'text-gray-500'}">#${i}</span>    
+                            <p class="text-sm font-medium">${names[i % 10]}</p>    
+                        </div>    
+                        <span class="text-sm font-bold text-cyan-400">$${(Math.random()*50).toFixed(2)}</span>    
+                     </div>`;    
+        }    
+        list.innerHTML = html;    
+    }    
+  
+    const user = tg.initDataUnsafe?.user;    
+    document.getElementById('user-name').innerText = user?.first_name || "Guest";    
+    document.getElementById('user-photo').src = user?.photo_url || `https://ui-avatars.com/api/?name=${user?.first_name || 'U'}&background=0088cc&color=fff`;    
+        
+    generateLeaderboard();    
+    updateUI();    
+</script>  </body>    
 </html>
