@@ -212,10 +212,10 @@
         tg.expand();
         tg.enableClosingConfirmation();
 
-        // --- ✅ ADSGRAM CONFIGURATION (FIXED) ---
-        const REWARD_ID = "25444";           // Reward Ad: Lakkoofsa qofa
-        const INTERSTITIAL_ID = "int-25445"; // Interstitial: 'int-' prefix ni barbaachisa
-        const TASK_ID = "task-25446";       // Task: 'task-' prefix ni barbaachisa
+        // --- ✅ ADSGRAM CONFIGURATION ---
+        const REWARD_ID = "25444";           
+        const INTERSTITIAL_ID = "int-25445"; 
+        const TASK_ID = "25446";  // ✅ 'task-' jalaa haquun lakkoofsa qofa gooneerra
 
         const AdController = window.Adsgram.init({ blockId: REWARD_ID });
         const InterstitialAd = window.Adsgram.init({ blockId: INTERSTITIAL_ID });
@@ -243,7 +243,7 @@
             localStorage.setItem('gem_bal', balance);
         }
 
-        // --- ✅ ACTIONS (FIXED) ---
+        // --- ✅ ACTIONS ---
         function watchAd() {
             AdController.show().then(() => {
                 balance += 0.10;
@@ -251,7 +251,9 @@
                 tg.HapticFeedback.notificationOccurred('success');
             }).catch((err) => {
                 console.error(err);
-                tg.showAlert("Reward Ad Error: Dashboard irratti Block ID 25444 'Reward' ta'uu mirkaneessi.");
+                // Error dhugaa Adsgram irraa dhufu agarsiisa
+                let errorMsg = err?.description || err?.message || "Beeksisni hin argamne ykn network dhabame.";
+                tg.showAlert("Ad Load Failed: " + errorMsg);
             });
         }
 
@@ -262,7 +264,8 @@
                 tg.HapticFeedback.notificationOccurred('success');
             }).catch((err) => {
                 console.error(err);
-                tg.showAlert("Task Error: Dashboard irratti Block ID 25446 'Task Block' ta'uu mirkaneessi.");
+                let errorMsg = err?.description || err?.message || "Beeksisni hin argamne ykn network dhabame.";
+                tg.showAlert("Task Load Failed: " + errorMsg);
             });
         }
 
@@ -273,7 +276,8 @@
                 tg.showAlert("Boost Successful!");
             }).catch((err) => {
                 console.error(err);
-                tg.showAlert("Interstitial Error: Dashboard irratti Block ID 25445 'Interstitial' ta'uu mirkaneessi.");
+                let errorMsg = err?.description || err?.message || "Beeksisni hin argamne ykn network dhabame.";
+                tg.showAlert("Boost Failed: " + errorMsg);
             });
         }
 
