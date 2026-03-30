@@ -1,147 +1,200 @@
 <!DOCTYPE html>
 <html lang="om">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gemini Premium App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Premium App</title>
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-<style>
-body {background:#050a14;color:white;font-family:Poppins;margin:0;overflow:hidden;}
-.page{display:none;}
-.page.active{display:block;}
-.nav-item{color:#64748b;}
-.nav-item.active{color:#00ffcc;}
-.glass-card{background:rgba(255,255,255,0.03);border-radius:20px;padding:10px;}
-</style>
+    <style>
+        body {
+            background: radial-gradient(circle at top, #1a1f2c 0%, #050a14 100%);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #00ffcc, #3399ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .action-btn {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #00ffcc 0%, #0099ff 100%);
+        }
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        .leaderboard-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 
-<body>
+<body class="p-4 pb-20">
 
-<div class="p-4">
+    <!-- Header Section -->
+    <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                <i class="fa-solid fa-user text-xl text-white"></i>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400">Welcome back,</p>
+                <h3 id="user-name" class="font-bold text-lg leading-tight">User</h3>
+            </div>
+        </div>
+        <div class="text-right">
+            <span id="user-rank-val" class="px-3 py-1 bg-yellow-500/10 text-yellow-500 rounded-full text-xs font-bold border border-yellow-500/20 uppercase tracking-wider">
+                Bronze
+            </span>
+        </div>
+    </div>
 
-<h3 id="user-name">User</h3>
-<h1>$<span id="user-balance">0.00</span></h1>
-<p>Rank: <span id="user-rank-val">Bronze</span></p>
-<p>My Position: <span id="my-rank-pos">#-</span></p>
+    <!-- Balance Card -->
+    <div class="glass-card p-8 text-center mb-6 relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500 opacity-10 rounded-full blur-3xl"></div>
+        <p class="text-gray-400 text-sm mb-1 uppercase tracking-widest">Total Balance</p>
+        <h1 class="text-5xl font-extrabold mb-2">$<span id="user-balance" class="gradient-text">0.00</span></h1>
+        <p class="text-gray-500 text-sm">Rank Position: <span id="my-rank-pos" class="text-cyan-400 font-bold">#-</span></p>
+    </div>
 
-<button onclick="watchAd()">+0.10</button>
-<button onclick="boostRank()">Boost</button>
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-2 gap-4 mb-8">
+        <button onclick="watchAd()" class="action-btn py-4 rounded-2xl font-bold flex flex-col items-center gap-2 shadow-lg shadow-cyan-500/20">
+            <i class="fa-solid fa-play-circle text-2xl"></i>
+            <span>Watch Ad (+0.10)</span>
+        </button>
+        <button onclick="boostRank()" class="bg-white/10 hover:bg-white/20 py-4 rounded-2xl font-bold flex flex-col items-center gap-2 border border-white/10">
+            <i class="fa-solid fa-rocket text-2xl text-cyan-400"></i>
+            <span>Boost Rank</span>
+        </button>
+    </div>
 
-<div id="leaderboard" class="page active">
-<h3>Leaderboard</h3>
-<div id="member-list"></div>
-</div>
+    <!-- Leaderboard Section -->
+    <div class="glass-card p-6">
+        <div class="flex items-center gap-2 mb-4">
+            <i class="fa-solid fa-trophy text-yellow-500"></i>
+            <h3 class="font-bold text-lg">Top Players</h3>
+        </div>
+        
+        <div id="member-list" class="space-y-1">
+            <!-- Leaderboard items will appear here -->
+        </div>
+    </div>
 
-</div>
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.headerColor = '#1a1f2c';
 
-<script>
-let tg = window.Telegram.WebApp;
-tg.expand();
+        let balance = parseFloat(localStorage.getItem('gem_bal')) || 0;
+        let allUsers = JSON.parse(localStorage.getItem('gem_users')) || [];
 
-// --- STATE ---
-let balance = parseFloat(localStorage.getItem('gem_bal')) || 0;
-let allUsers = JSON.parse(localStorage.getItem('gem_users')) || [];
+        function initUser(){
+            const user = tg.initDataUnsafe?.user;
+            const currentUserId = user?.id || "guest_default";
+            
+            let exists = allUsers.find(u => u.id === currentUserId);
 
-// --- INIT USER ---
-function initUser(){
-    const user = tg.initDataUnsafe?.user;
-
-    const currentUser = {
-        id: user?.id || "guest_" + Math.random(),
-        name: user?.first_name || "Guest",
-        balance: balance
-    };
-
-    let exists = allUsers.find(u => u.id === currentUser.id);
-
-    if(!exists){
-        allUsers.push(currentUser);
-    }
-
-    localStorage.setItem('gem_users', JSON.stringify(allUsers));
-}
-
-// --- UPDATE BALANCE UI ---
-function updateUI(){
-    document.getElementById('user-balance').innerText = balance.toFixed(2);
-
-    let rank="Bronze";
-    if(balance>10) rank="Silver";
-    if(balance>50) rank="Gold";
-    if(balance>200) rank="Diamond";
-
-    document.getElementById('user-rank-val').innerText = rank;
-
-    localStorage.setItem('gem_bal', balance);
-
-    syncUserBalance();
-    generateLeaderboard();
-}
-
-// --- SYNC USER ---
-function syncUserBalance(){
-    const user = tg.initDataUnsafe?.user;
-
-    allUsers = allUsers.map(u=>{
-        if(u.id === user?.id){
-            return {...u, balance: balance};
+            if(!exists){
+                allUsers.push({
+                    id: currentUserId,
+                    name: user?.first_name || "Guest",
+                    balance: balance
+                });
+            }
+            localStorage.setItem('gem_users', JSON.stringify(allUsers));
         }
-        return u;
-    });
 
-    localStorage.setItem('gem_users', JSON.stringify(allUsers));
-}
+        function updateUI(){
+            document.getElementById('user-balance').innerText = balance.toFixed(2);
 
-// --- LEADERBOARD ---
-function generateLeaderboard(){
-    const list = document.getElementById('member-list');
+            let rank = "Bronze";
+            let colorClass = "text-orange-400";
+            if(balance > 10) { rank = "Silver"; colorClass = "text-gray-300"; }
+            if(balance > 50) { rank = "Gold"; colorClass = "text-yellow-400"; }
+            if(balance > 200) { rank = "Diamond"; colorClass = "text-cyan-400"; }
 
-    const sorted = allUsers.sort((a,b)=>b.balance-a.balance);
+            const rankEl = document.getElementById('user-rank-val');
+            rankEl.innerText = rank;
+            
+            localStorage.setItem('gem_bal', balance);
+            syncUserBalance();
+            generateLeaderboard();
+        }
 
-    let html="";
+        function syncUserBalance(){
+            const user = tg.initDataUnsafe?.user;
+            const currentUserId = user?.id || "guest_default";
 
-    sorted.forEach((u,i)=>{
-        html+=`
-        <div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #333;">
-            <span>#${i+1} ${u.name}</span>
-            <span>$${u.balance.toFixed(2)}</span>
-        </div>`;
-    });
+            allUsers = allUsers.map(u => {
+                if(u.id === currentUserId){
+                    return {...u, balance: balance};
+                }
+                return u;
+            });
+            localStorage.setItem('gem_users', JSON.stringify(allUsers));
+        }
 
-    list.innerHTML = html;
+        function generateLeaderboard(){
+            const list = document.getElementById('member-list');
+            const sorted = [...allUsers].sort((a,b) => b.balance - a.balance);
 
-    const user = tg.initDataUnsafe?.user;
-    const myIndex = sorted.findIndex(u=>u.id===user?.id);
+            list.innerHTML = sorted.map((u, i) => `
+                <div class="leaderboard-item flex items-center justify-between py-3">
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 text-gray-500 font-bold">${i + 1}</span>
+                        <span class="${i < 3 ? 'text-white font-semibold' : 'text-gray-400'}">${u.name}</span>
+                    </div>
+                    <span class="font-mono text-cyan-400 font-bold">$${u.balance.toFixed(2)}</span>
+                </div>
+            `).join('');
 
-    document.getElementById('my-rank-pos').innerText =
-        myIndex>=0 ? "#"+(myIndex+1) : "#-";
-}
+            const user = tg.initDataUnsafe?.user;
+            const myIndex = sorted.findIndex(u => u.id === (user?.id || "guest_default"));
+            document.getElementById('my-rank-pos').innerText = myIndex >= 0 ? "#" + (myIndex + 1) : "#-";
+        }
 
-// --- ACTIONS ---
-function watchAd(){
-    balance += 0.10;
-    updateUI();
-}
+        function watchAd(){
+            balance += 0.10;
+            // Haptic Feedback for Telegram
+            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            updateUI();
+        }
 
-function boostRank(){
-    balance += 0.01;
-    updateUI();
-}
+        function boostRank(){
+            balance += 0.01;
+            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            updateUI();
+        }
 
-// --- USER INFO ---
-const user = tg.initDataUnsafe?.user;
-document.getElementById('user-name').innerText = user?.first_name || "Guest";
+        const user = tg.initDataUnsafe?.user;
+        document.getElementById('user-name').innerText = user?.first_name || "Guest User";
 
-// --- START ---
-initUser();
-updateUI();
-
-</script>
-
+        initUser();
+        updateUI();
+    </script>
 </body>
 </html>
