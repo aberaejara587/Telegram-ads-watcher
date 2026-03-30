@@ -211,127 +211,145 @@
     </button>    
 </nav>
 
-</div>    <script>    
-    let tg = window.Telegram.WebApp;    
-    tg.expand();    
-    tg.enableClosingConfirmation();    
-  
-    // --- ADSGRAM CONFIGURATION ---    
-    // HUBADHU: ID'n kunniin Dashboard kee irratti Type uumte wajjin wal simuu qabu!    
-    const REWARD_ID = "25444";         // Dashboard: Reward Ad    
-    const INTERSTITIAL_ID = "int-25445"; // Dashboard: Interstitial Ad (int- prefix barbaachisaadha)    
-    const TASK_ID = "25446";            // ✅ FIXED: 'task-' prefix is not allowed. Use plain number.    
-  
-    const AdController = window.Adsgram.init({ blockId: REWARD_ID });    
-    const InterstitialAd = window.Adsgram.init({ blockId: INTERSTITIAL_ID });    
-    const TaskAd = window.Adsgram.init({ blockId: TASK_ID });    
-  
-    // --- STATE MANAGEMENT ---    
-    let balance = parseFloat(localStorage.getItem('gem_bal')) || 0.00;    
-    let walletAddress = localStorage.getItem('gem_wallet') || "";    
-  
-    function updateUI() {    
-        document.getElementById('user-balance').innerText = balance.toFixed(2);    
-            
-        if(walletAddress) {    
-            document.getElementById('wallet-status').innerText = "Connected";    
-            document.getElementById('wallet-status').classList.replace('text-gray-500', 'text-green-400');    
-            document.getElementById('status-dot').classList.replace('bg-gray-500', 'bg-green-500');    
-            document.getElementById('wallet-input').value = walletAddress;    
-            document.getElementById('wallet-connect-ui').classList.add('hidden');    
-            document.getElementById('wallet-connected-ui').classList.remove('hidden');    
-        }    
-            
-        let rank = "Bronze";    
-        if(balance > 10) rank = "Silver";    
-        if(balance > 50) rank = "Gold";    
-        if(balance > 200) rank = "Diamond";    
-        document.getElementById('user-rank-val').innerText = rank;    
-  
-        localStorage.setItem('gem_bal', balance);    
-    }    
-  
-    // --- ACTIONS ---    
-    function watchAd() {    
-        AdController.show().then(() => {    
-            balance += 0.10;    
-            updateUI();    
-            tg.HapticFeedback.notificationOccurred('success');    
-        }).catch((err) => {    
-            tg.showAlert("Reward Ad Error: Dashboard irratti Block ID 25444 'Reward' ta'uu mirkaneessi.");    
-        });    
-    }    
-  
-    function watchTaskAd() {    
-        TaskAd.show().then(() => {    
-            balance += 0.05;    
-            updateUI();    
-            tg.HapticFeedback.notificationOccurred('success');    
-        }).catch((err) => {    
-            tg.showAlert("Task Error: Dashboard irratti Block ID 25446 'Task' ta'uu mirkaneessi.");    
-        });    
-    }    
-  
-    function boostRank() {    
-        InterstitialAd.show().then(() => {    
-            balance += 0.01;    
-            updateUI();    
-            tg.showAlert("Boost Successful!");    
-        }).catch((err) => {    
-            tg.showAlert("Interstitial Error: Dashboard irratti Block ID 25445 'Interstitial' ta'uu mirkaneessi.");    
-        });    
-    }    
-  
-    function openTelegramWallet() {    
-        tg.HapticFeedback.impactOccurred('medium');    
-        tg.showConfirm("Connect your TON Wallet?", (confirmed) => {    
-            if(confirmed) {    
-                setTimeout(() => {    
-                    let randomAddr = "UQ" + Math.random().toString(36).substring(2, 10).toUpperCase() + "...TON";    
-                    walletAddress = randomAddr;    
-                    localStorage.setItem('gem_wallet', randomAddr);    
-                    updateUI();    
-                    tg.HapticFeedback.notificationOccurred('success');    
-                }, 2000);    
-            }    
-        });    
-    }    
-  
-    function shareLink() {    
-        const userId = tg.initDataUnsafe?.user?.id || "000";    
-        const link = `https://t.me/Ethio_Coin1_bot/app?start=r${userId}`;    
-        tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Join me and earn!`);    
-    }    
-  
-    function showSection(id, btn) {    
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));    
-        document.getElementById(id).classList.add('active');    
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));    
-        if(btn && btn.classList.contains('nav-item')) btn.classList.add('active');    
-        tg.HapticFeedback.impactOccurred('light');    
-    }    
-  
-    function generateLeaderboard() {    
-        const list = document.getElementById('member-list');    
-        const names = ["Abbebe", "Chala", "Lensa", "Tolasa", "Biftu", "Mulu", "Kiya", "Obsa", "Hana", "Sola"];    
-        let html = "";    
-        for (let i = 1; i <= 20; i++) {    
-            html += `<div class="rank-item flex items-center justify-between p-4 rounded-2xl opacity-80 border-b border-white/5">    
-                        <div class="flex items-center gap-3">    
-                            <span class="text-xs font-bold ${i < 4 ? 'text-yellow-400' : 'text-gray-500'}">#${i}</span>    
-                            <p class="text-sm font-medium">${names[i % 10]}</p>    
-                        </div>    
-                        <span class="text-sm font-bold text-cyan-400">$${(Math.random()*50).toFixed(2)}</span>    
-                     </div>`;    
-        }    
-        list.innerHTML = html;    
-    }    
-  
-    const user = tg.initDataUnsafe?.user;    
-    document.getElementById('user-name').innerText = user?.first_name || "Guest";    
-    document.getElementById('user-photo').src = user?.photo_url || `https://ui-avatars.com/api/?name=${user?.first_name || 'U'}&background=0088cc&color=fff`;    
+</div>    <script>
+    let tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.enableClosingConfirmation();
+
+    // --- ADSGRAM CONFIGURATION ---
+    // Dashboard kee irratti ID kanaan gosa beeksisaa sirrii uumuu kee mirkaneessi
+    const REWARD_ID = "25444";      // Type: Reward Ad
+    const INTERSTITIAL_ID = "25445"; // Type: Interstitial
+    const TASK_ID = "25446";       // Type: Task Block
+
+    // Initializing Controllers
+    const AdController = window.Adsgram.init({ blockId: REWARD_ID });
+    const InterstitialController = window.Adsgram.init({ blockId: INTERSTITIAL_ID });
+    const TaskController = window.Adsgram.init({ blockId: TASK_ID });
+
+    // --- STATE MANAGEMENT ---
+    let balance = parseFloat(localStorage.getItem('gem_bal')) || 0.00;
+    let walletAddress = localStorage.getItem('gem_wallet') || "";
+
+    function updateUI() {
+        document.getElementById('user-balance').innerText = balance.toFixed(2);
         
-    generateLeaderboard();    
-    updateUI();    
-</script>  </body>    
+        if(walletAddress) {
+            document.getElementById('wallet-status').innerText = "Connected";
+            document.getElementById('wallet-status').classList.replace('text-gray-500', 'text-green-400');
+            document.getElementById('status-dot').classList.replace('bg-gray-500', 'bg-green-500');
+            document.getElementById('wallet-input').value = walletAddress;
+            document.getElementById('wallet-connect-ui').classList.add('hidden');
+            document.getElementById('wallet-connected-ui').classList.remove('hidden');
+        }
+        
+        let rank = "Bronze";
+        if(balance > 10) rank = "Silver";
+        if(balance > 50) rank = "Gold";
+        if(balance > 200) rank = "Diamond";
+        document.getElementById('user-rank-val').innerText = rank;
+
+        localStorage.setItem('gem_bal', balance);
+    }
+
+    // --- ACTIONS ---
+
+    // 1. Reward Ad Action
+    async function watchAd() {
+        try {
+            await AdController.show();
+            balance += 0.10;
+            updateUI();
+            tg.HapticFeedback.notificationOccurred('success');
+        } catch (err) {
+            console.error(err);
+            tg.showAlert("Beeksisni hin jiru (No Ads available). Ammas irra deebi'i.");
+        }
+    }
+
+    // 2. Task Block Action (Kuni kan ati gaafatte)
+    async function watchTaskAd() {
+        tg.HapticFeedback.impactOccurred('medium');
+        try {
+            // Task Controller waamuu
+            await TaskController.show();
+            // Erga xumuramee booda reward kennuu
+            balance += 0.05;
+            updateUI();
+            tg.HapticFeedback.notificationOccurred('success');
+            tg.showAlert("Task Completed! $0.05 dabalameera.");
+        } catch (err) {
+            console.error(err);
+            tg.showAlert("Task Error: Block ID " + TASK_ID + " Dashboard irratti 'Task' ta'uu mirkaneessi.");
+        }
+    }
+
+    // 3. Interstitial Ad (Boost)
+    async function boostRank() {
+        try {
+            await InterstitialController.show();
+            balance += 0.01;
+            updateUI();
+            tg.showAlert("Boost Successful!");
+        } catch (err) {
+            console.error(err);
+            tg.showAlert("Interstitial Ad ammaaf hin jiru.");
+        }
+    }
+
+    // --- OTHER FUNCTIONS ---
+    function openTelegramWallet() {
+        tg.HapticFeedback.impactOccurred('medium');
+        tg.showConfirm("Connect your TON Wallet?", (confirmed) => {
+            if(confirmed) {
+                setTimeout(() => {
+                    let randomAddr = "UQ" + Math.random().toString(36).substring(2, 10).toUpperCase() + "..." + Math.random().toString(36).substring(2, 5).toUpperCase();
+                    walletAddress = randomAddr;
+                    localStorage.setItem('gem_wallet', randomAddr);
+                    updateUI();
+                    tg.HapticFeedback.notificationOccurred('success');
+                }, 1500);
+            }
+        });
+    }
+
+    function shareLink() {
+        const userId = tg.initDataUnsafe?.user?.id || "000";
+        const link = `https://t.me/Ethio_Coin1_bot/app?start=r${userId}`;
+        tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Gemini Premium App irratti ana wajjin hojjedhu!`);
+    }
+
+    function showSection(id, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        if(btn && btn.classList.contains('nav-item')) btn.classList.add('active');
+        tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function generateLeaderboard() {
+        const list = document.getElementById('member-list');
+        const names = ["Abbebe", "Chala", "Lensa", "Tolasa", "Biftu", "Mulu", "Kiya", "Obsa", "Hana", "Sola"];
+        let html = "";
+        for (let i = 1; i <= 15; i++) {
+            html += `<div class="rank-item flex items-center justify-between p-4 border-b border-white/5">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold ${i < 4 ? 'text-yellow-400' : 'text-gray-500'}">#${i}</span>
+                            <p class="text-sm font-medium">${names[i % 10]}</p>
+                        </div>
+                        <span class="text-sm font-bold text-cyan-400">$${(Math.random()*50 + 10).toFixed(2)}</span>
+                     </div>`;
+        }
+        list.innerHTML = html;
+    }
+
+    // Initialize User Data
+    const user = tg.initDataUnsafe?.user;
+    document.getElementById('user-name').innerText = user?.first_name || "Guest";
+    document.getElementById('user-photo').src = user?.photo_url || `https://ui-avatars.com/api/?name=${user?.first_name || 'U'}&background=0088cc&color=fff`;
+        
+    generateLeaderboard();
+    updateUI();
+</script>
+</body>    
 </html>
