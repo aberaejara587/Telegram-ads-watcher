@@ -164,7 +164,8 @@
                             <h4 class="font-bold text-sm">Bonus Task</h4>
                             <p class="text-[10px] text-yellow-400 font-bold">+$0.05 Reward</p>
                         </div>
-                        <button onclick="watchTaskAd()" class="bg-yellow-500 text-black text-[10px] font-bold px-6 py-2 rounded-full uppercase active:scale-90">Play</button>
+                        <!-- Koodiin Task HTML dhaan sirreeffameera -->
+                        <adsgram-task data-block-id="task-25446" data-debug="false"></adsgram-task>
                     </div>
                 </div>
             </div>
@@ -215,11 +216,10 @@
         // --- ✅ ADSGRAM CONFIGURATION ---
         const REWARD_ID = "25444";           
         const INTERSTITIAL_ID = "int-25445"; 
-        const TASK_ID = "25446";  // ✅ 'task-' jalaa haquun lakkoofsa qofa gooneerra
-
+        
         const AdController = window.Adsgram.init({ blockId: REWARD_ID });
         const InterstitialAd = window.Adsgram.init({ blockId: INTERSTITIAL_ID });
-        const TaskAd = window.Adsgram.init({ blockId: TASK_ID });
+        // Task ID JS irraa haqameera sababni isaas karaa HTML waan hojjetuuf
 
         // --- STATE MANAGEMENT ---
         let balance = parseFloat(localStorage.getItem('gem_bal')) || 0.00;
@@ -257,17 +257,24 @@
             });
         }
 
-        function watchTaskAd() {
-            TaskAd.show().then(() => {
-                balance += 0.05;
-                updateUI();
-                tg.HapticFeedback.notificationOccurred('success');
-            }).catch((err) => {
-                console.error(err);
-                let errorMsg = err?.description || err?.message || "Beeksisni hin argamne ykn network dhabame.";
-                tg.showAlert("Task Load Failed: " + errorMsg);
-            });
-        }
+        // --- ✅ Task Ad Event Listener ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const taskElement = document.querySelector('adsgram-task');
+            if (taskElement) {
+                // Yeroo namichi task hojjetu qarshii dabaliif
+                taskElement.addEventListener('reward', () => {
+                    balance += 0.05;
+                    updateUI();
+                    tg.HapticFeedback.notificationOccurred('success');
+                    tg.showAlert("Task xumurameera! Badhaasa kee argatteetta.");
+                });
+                
+                // Yoo dogoggorri uumame
+                taskElement.addEventListener('onError', () => {
+                    tg.showAlert("Task fiduun hin danda'amne. Irra deebi'ii yaali.");
+                });
+            }
+        });
 
         function boostRank() {
             InterstitialAd.show().then(() => {
